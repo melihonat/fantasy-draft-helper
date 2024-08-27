@@ -14,23 +14,45 @@ export interface Player {
 
 export async function getPlayers(): Promise<Player[]> {
   const filePath = path.join(__dirname, 'all_nfl_players.json');
+  console.log("Attempting to read file:", filePath);
 
-  const fileContent = await fs.readFile(filePath, 'utf8');
+  try {
+    const fileContent = await fs.readFile(filePath, 'utf8');
+    console.log('File read successfully');
 
-  const playersData = JSON.parse(fileContent);
-  
-  const players = Object.values(playersData) as any[];
-  return players
-    .filter(player => player.position && player.team && player.rank)
-    .map(player => ({
-      player_id: player.player_id,
-      full_name: player.full_name,
-      position: player.position,
-      team: player.team,
-      adp: player.search_rank // Using rank as a proxy for ADP
-    }))
-    .sort((a, b) => a.adp - b.adp)
-    .slice(0, 200); // Limiting to top 200 players for performance
+    const playersData = JSON.parse(fileContent);
+    console.log('Number of players in raw data:', Object.keys(playersData).length);
+    
+    const players = Object.values(playersData) as any[];
+    // Debug: Log the first player to see its structure
+    console.log('Sample player data:', players[0]);
+
+    // Count players with each property
+    const withPosition = players.filter(player => player.position).length;
+    const withTeam = players.filter(player => player.team).length;
+    const withRank = players.filter(player => player.search_rank).length;
+    console.log(`Players with position: ${withPosition}`);
+    console.log(`Players with team: ${withTeam}`);
+    console.log(`Players with rank: ${withRank}`);
+
+    const filteredPlayers = players
+      .filter(player => player.position && player.search_rank && player.team)
+      .map(player => ({
+        player_id: player.player_id,
+        full_name: player.full_name,
+        position: player.position,
+        team: player.team_abbr,
+        adp: player.search_rank // Using rank as a proxy for ADP
+      }))
+      .sort((a, b) => a.adp - b.adp)
+      .slice(0, 400);
+
+    console.log('Number of filtered players:', filteredPlayers.length);
+    return filteredPlayers;
+  } catch (error) {
+    console.error('Error reading or processing players file:', error);
+    throw error;
+  }
 }
 
 export async function getADP(): Promise<{ [key: string]: number }> {

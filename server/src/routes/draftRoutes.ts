@@ -1,10 +1,14 @@
 import express from 'express';
 import { getPlayers, Player } from '../services/sleeperService';
 import { getRecommendation, updatePositionalNeed } from '../services/recommendationService';
+import { LeagueSettings } from '../models/LeagueSettings';
+import { DraftState } from '../models/DraftState';
 
 const router = express.Router();
 
 let allPlayers: Player[] = [];
+let leagueSettings: LeagueSettings | null = null;
+let draftState: DraftState | null = null;
 
 router.get('/players', async (req, res) => {
   try {
@@ -13,30 +17,69 @@ router.get('/players', async (req, res) => {
     }
     res.json(allPlayers);
   } catch (error) {
-    res.status(500).json({ error: 'An error occurred while fetching players' });
+    console.error('Error retrieving players:', error);
+    res.status(500).json({ message: 'Error retrieving players' });
   }
 });
 
-router.post('/recommendation', async (req, res) => {
-  try {
-    const { draftedPlayers, rosterSize } = req.body;
+router.post('/league-settings', (req, res) => {
+  leagueSettings = req.body as LeagueSettings;
+  draftState = new DraftState(leagueSettings);
+  res.json({ message: 'League settings saved successfully' });
+});
 
-    if (allPlayers.length === 0) {
-      allPlayers = await getPlayers();
-    }
-
-    const availablePlayers = allPlayers.filter(
-      player => !draftedPlayers.some((dp: Player) => dp.player_id === player.player_id)
-    );
-
-    const positionalNeed = updatePositionalNeed(draftedPlayers, rosterSize);
-
-    const recommendation = getRecommendation(availablePlayers, draftedPlayers, positionalNeed);
-
-    res.json({ recommendation });
-  } catch (error) {
-    res.status(500).json({ error: 'An error occurred while fetching the recommendation' });
+router.get('/league-settings', (req, res) => {
+  if (leagueSettings) {
+    res.json(leagueSettings);
+  } else {
+    res.status(404).json({ message: 'League settings not found' });
   }
+});
+
+router.post('/draft-player', (req, res) => {
+  if (!draftState) {
+    return res.status(400).json({ message: 'Draft has not been initialized' });
+  }
+
+  const { playerId, teamId } = req.body;
+  const player = allPlayers.find(p => p.player_id === playerId);
+
+  if (!player) {
+    return res.status(404).json({ message: 'Player not found' });
+  }
+
+  draftState.draftPlayer(player, teamId);
+  res.json({ message: 'Player drafted successfully', draftState });
+});
+
+router.get('/draft-state', (req, res) => {
+  if (draftState) {
+    res.json(draftState);
+  } else {
+    res.status(404).json({ message: 'Draft state not found' });
+  }
+});
+
+router.post('/recommendation', (req, res) => {
+  if (!draftState || !leagueSettings) {
+    return res.status(400).json({ message: 'Draft has not been initialized' });
+  }
+
+  const { teamId } = req.body;
+  const team = draftState.teams.find(t => t.id === teamId);
+
+  if (!team) {
+    return res.status(404).json({ message: 'Team not found' });
+  }
+
+  const availablePlayers = allPlayers.filter(
+    player => !draftState!.draftedPlayers.some(dp => dp.player_id === player.player_id)
+  );
+
+  const positionalNeed = updatePositionalNeed(team.players, leagueSettings);
+  const recommendation = getRecommendation(availablePlayers, team.players, positionalNeed, leagueSettings);
+
+  res.json({ recommendation });
 });
 
 export default router;

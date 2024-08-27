@@ -1,5 +1,6 @@
 import express from 'express';
-import { getPlayers, Player } from '../services/sleeperService';
+import { getPlayers } from '../services/playerService';
+import { Player } from '../models/Player';
 import { getRecommendation, updatePositionalNeed } from '../services/recommendationService';
 import { LeagueSettings } from '../models/LeagueSettings';
 import { DraftState } from '../models/DraftState';

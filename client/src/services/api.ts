@@ -6,6 +6,10 @@ export interface Player {
   position: string;
   team: string;
   adp: number;
+  rank: number;
+  cbs_adp: number | null;
+  sleeper_adp: number | null;
+  rtsports_adp: number | null;
 }
 
 export interface LeagueSettings {

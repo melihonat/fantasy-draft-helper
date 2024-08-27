@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { Player, api, API_BASE_URL, LeagueSettings, DraftState } from '../services/api';
+import { Player, api, LeagueSettings, DraftState } from '../services/api';
 import { PlayerList, DraftBoard, RecommendationDisplay } from './';
 import LeagueSetup from './LeagueSetup';
 

@@ -1,4 +1,4 @@
-import { Player } from '../services/sleeperService';
+import { Player } from './Player';
 import { LeagueSettings } from './LeagueSettings';
 
 interface Team {

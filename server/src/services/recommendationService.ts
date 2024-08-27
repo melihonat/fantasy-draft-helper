@@ -1,4 +1,4 @@
-import { Player } from './sleeperService';
+import { Player } from '../models/Player';
 import { LeagueSettings } from '../models/LeagueSettings';
 
 interface PositionalNeed {

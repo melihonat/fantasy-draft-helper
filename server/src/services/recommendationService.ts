@@ -13,7 +13,14 @@ export function getRecommendation(
 ): Player {
   const sortedPlayers = availablePlayers.sort((a, b) => a.adp - b.adp);
 
-  const playerValues = sortedPlayers.map(player => ({
+  const remainingSlots = getRemainingSlots(draftedPlayers, leagueSettings);
+  const eligiblePlayers = sortedPlayers.filter(player => remainingSlots[player.position] > 0);
+
+  if (eligiblePlayers.length === 0) {
+    throw new Error('No eligible players to draft');
+  }
+
+  const playerValues = eligiblePlayers.map(player => ({
     ...player,
     value: calculateValue(player, positionalNeed, draftedPlayers, leagueSettings)
   }));
@@ -21,6 +28,43 @@ export function getRecommendation(
   return playerValues.reduce((best, current) => 
     current.value > best.value ? current : best
   , playerValues[0]);
+}
+
+function getRemainingSlots(draftedPlayers: Player[], leagueSettings: LeagueSettings): Record<string, number> {
+  const draftedCounts = {
+    QB: draftedPlayers.filter(p => p.position === 'QB').length,
+    RB: draftedPlayers.filter(p => p.position === 'RB').length,
+    WR: draftedPlayers.filter(p => p.position === 'WR').length,
+    TE: draftedPlayers.filter(p => p.position === 'TE').length,
+    K: draftedPlayers.filter(p => p.position === 'K').length,
+    DEF: draftedPlayers.filter(p => p.position === 'DEF').length,
+  };
+
+  const remainingSlots = {
+    QB: Math.max(0, leagueSettings.qbSlots - draftedCounts.QB),
+    RB: Math.max(0, leagueSettings.rbSlots - draftedCounts.RB),
+    WR: Math.max(0, leagueSettings.wrSlots - draftedCounts.WR),
+    TE: Math.max(0, leagueSettings.teSlots - draftedCounts.TE),
+    K: Math.max(0, leagueSettings.kSlots - draftedCounts.K),
+    DEF: Math.max(0, leagueSettings.defSlots - draftedCounts.DEF),
+  };
+
+  const flexSlots = Math.max(0, leagueSettings.flexSlots - 
+    Math.max(0, draftedCounts.RB - leagueSettings.rbSlots) -
+    Math.max(0, draftedCounts.WR - leagueSettings.wrSlots) -
+    Math.max(0, draftedCounts.TE - leagueSettings.teSlots)
+  );
+
+  remainingSlots.RB += flexSlots;
+  remainingSlots.WR += flexSlots;
+  remainingSlots.TE += flexSlots;
+
+  const benchSlots = leagueSettings.benchSlots;
+  (Object.keys(remainingSlots) as Array<keyof typeof remainingSlots>).forEach(pos => {
+    remainingSlots[pos] += benchSlots;
+  });
+
+  return remainingSlots;
 }
 
 function calculateValue(

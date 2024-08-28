@@ -8,10 +8,11 @@ interface LeagueSetupProps {
 const LeagueSetup: React.FC<LeagueSetupProps> = ({ onSettingsSubmit }) => {
     const [settings, setSettings] = useState<LeagueSettings>({
       teamCount: 10,
-      rosterSize: 15,
+      teamNames: Array(10).fill('').map((_, i) => `Team ${i + 1}`),
+      rosterSize: 16,
       qbSlots: 1,
       rbSlots: 2,
-      wrSlots: 2,
+      wrSlots: 3,
       teSlots: 1,
       flexSlots: 1,
       kSlots: 1,
@@ -24,7 +25,15 @@ const LeagueSetup: React.FC<LeagueSetupProps> = ({ onSettingsSubmit }) => {
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setSettings(prev => ({ ...prev, [name]: parseInt(value, 10) }));
+    if (name.startsWith('teamName')) {
+      const index = parseInt(name.replace('teamName', ''), 10);
+      setSettings(prev => ({
+        ...prev,
+        teamNames: prev.teamNames.map((teamName, i) => i === index ? value : teamName)
+      }));
+    } else {
+      setSettings(prev => ({ ...prev, [name]: parseInt(value, 10) }));
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -39,18 +48,93 @@ const LeagueSetup: React.FC<LeagueSetupProps> = ({ onSettingsSubmit }) => {
         <div>
           <label className="block mb-1">
             Number of Teams:
-            <input type="number" name="teamCount" value={settings.teamCount} onChange={handleChange} min="4" max="16"
+            <input 
+              type="number" 
+              name="teamCount" 
+              value={settings.teamCount} 
+              onChange={(e) => {
+                const newTeamCount = parseInt(e.target.value, 10);
+                setSettings(prev => ({
+                  ...prev,
+                  teamCount: newTeamCount,
+                  teamNames: Array(newTeamCount).fill('').map((_, i) => prev.teamNames[i] || `Team ${i + 1}`)
+                }));
+              }} 
+              min="4" 
+              max="16"
+              className="w-full mt-1 bg-nfl-gray bg-opacity-20 text-nfl-white rounded p-2" />
+          </label>
+        </div>
+        {settings.teamNames.map((teamName, index) => (
+          <div key={index}>
+            <label className="block mb-1">
+              Team {index + 1} Name:
+              <input
+                type="text"
+                name={`teamName${index}`}
+                value={teamName}
+                onChange={handleChange}
+                className="w-full mt-1 bg-nfl-gray bg-opacity-20 text-nfl-white rounded p-2"
+              />
+            </label>
+          </div>
+        ))}
+        <div>
+          <label className="block mb-1">
+            QB Slots:
+            <input type="number" name="qbSlots" value={settings.qbSlots} onChange={handleChange} min="1" max="10"
               className="w-full mt-1 bg-nfl-gray bg-opacity-20 text-nfl-white rounded p-2" />
           </label>
         </div>
         <div>
           <label className="block mb-1">
-            Roster Size:
-            <input type="number" name="rosterSize" value={settings.rosterSize} onChange={handleChange} min="10" max="20"
+            RB Slots:
+            <input type="number" name="rbSlots" value={settings.rbSlots} onChange={handleChange} min="1" max="10"
               className="w-full mt-1 bg-nfl-gray bg-opacity-20 text-nfl-white rounded p-2" />
           </label>
         </div>
-        {/* Add more input fields for other settings */}
+        <div>
+          <label className="block mb-1">
+            WR Slots:
+            <input type="number" name="wrSlots" value={settings.wrSlots} onChange={handleChange} min="1" max="10"
+              className="w-full mt-1 bg-nfl-gray bg-opacity-20 text-nfl-white rounded p-2" />
+          </label>
+        </div>
+        <div>
+          <label className="block mb-1">
+            TE Slots:
+            <input type="number" name="teSlots" value={settings.teSlots} onChange={handleChange} min="1" max="10"
+              className="w-full mt-1 bg-nfl-gray bg-opacity-20 text-nfl-white rounded p-2" />
+          </label>
+        </div>
+        <div>
+          <label className="block mb-1">
+            Flex Slots:
+            <input type="number" name="flexSlots" value={settings.flexSlots} onChange={handleChange} min="1" max="10"
+              className="w-full mt-1 bg-nfl-gray bg-opacity-20 text-nfl-white rounded p-2" />
+          </label>
+          </div>
+        <div>
+          <label className="block mb-1">
+            K Slots:
+            <input type="number" name="kSlots" value={settings.kSlots} onChange={handleChange} min="1" max="10"
+              className="w-full mt-1 bg-nfl-gray bg-opacity-20 text-nfl-white rounded p-2" />
+          </label>
+        </div>
+        <div>
+          <label className="block mb-1">
+            DEF Slots:
+            <input type="number" name="defSlots" value={settings.defSlots} onChange={handleChange} min="1" max="10"
+              className="w-full mt-1 bg-nfl-gray bg-opacity-20 text-nfl-white rounded p-2" />
+          </label>
+        </div>
+        <div>
+          <label className="block mb-1">  
+            Bench Slots:
+            <input type="number" name="benchSlots" value={settings.benchSlots} onChange={handleChange} min="1" max="10"
+              className="w-full mt-1 bg-nfl-gray bg-opacity-20 text-nfl-white rounded p-2" />
+          </label>
+        </div>
       </div>
       <button type="submit" className="w-full mt-6 bg-nfl-red hover:bg-red-700 text-nfl-white font-bold py-2 px-4 rounded transition duration-300 ease-in-out">
         Save Settings

@@ -22,27 +22,45 @@ export class DraftState {
   draftPlayer(player: Player, teamId: number) {
     const team = this.teams.find(t => t.id === teamId);
     if (!team) throw new Error('Invalid team ID');
-
+  
     const slot = this.determinePlayerSlot(player, team);
+    if (slot === null) {
+      throw new Error(`Cannot draft ${player.full_name} to team ${team.id}`);
+    }
+  
     const draftedPlayer = { ...player, slot, draftPickNumber: this.currentPick };
     team.players.push(draftedPlayer);
     this.draftedPlayers.push(draftedPlayer);
     this.currentPick++;
+  
+    this.optimizeTeamRoster(team);
 
-    // Check if all teams have filled their rosters
     if (this.teams.every(team => team.players.length >= this.settings.rosterSize)) {
       throw new Error('Draft is complete');
     }
   }
 
-  getCurrentTeam(): Team {
-    const roundNumber = Math.ceil(this.currentPick / this.settings.teamCount);
-    const pickInRound = (this.currentPick - 1) % this.settings.teamCount;
-    const teamIndex = roundNumber % 2 === 1 ? pickInRound : this.settings.teamCount - 1 - pickInRound;
-    return this.teams[teamIndex];
+  optimizeTeamRoster(team: Team) {
+    const sortedPlayers = team.players.sort((a, b) => a.adp - b.adp);
+    const newRoster: Player[] = [];
+  
+    for (const player of sortedPlayers) {
+      const slot = this.determinePlayerSlot(player, { id: team.id, players: newRoster });
+      if (slot) {
+        newRoster.push({ ...player, slot });
+      }
+    }
+  
+    team.players = newRoster;
   }
 
-  determinePlayerSlot(player: Player, team: Team): string {
+  getCurrentTeamId(): number {
+    const roundNumber = Math.ceil(this.currentPick / this.settings.teamCount);
+    const pickInRound = (this.currentPick - 1) % this.settings.teamCount;
+    return roundNumber % 2 === 1 ? pickInRound + 1 : this.settings.teamCount - pickInRound;
+  }
+
+  determinePlayerSlot(player: Player, team: Team): string | null {
     const positionCounts = {
       QB: team.players.filter(p => p.position === 'QB').length,
       RB: team.players.filter(p => p.position === 'RB').length,
@@ -50,29 +68,45 @@ export class DraftState {
       TE: team.players.filter(p => p.position === 'TE').length,
       K: team.players.filter(p => p.position === 'K').length,
       DEF: team.players.filter(p => p.position === 'DEF').length,
+      FLEX: team.players.filter(p => p.slot === 'FLEX').length,
+      BN: team.players.filter(p => p.slot === 'BN').length,
     };
+
+    const benchCount = team.players.filter(p => p.slot === 'BN').length;
   
     switch (player.position) {
       case 'QB':
-        return positionCounts.QB < this.settings.qbSlots ? 'QB' : 'BN';
+        if (positionCounts.QB < this.settings.qbSlots) return 'QB';
+        break;
       case 'RB':
-        return positionCounts.RB < this.settings.rbSlots ? 'RB' : 
-               (positionCounts.RB + positionCounts.WR + positionCounts.TE < 
-                this.settings.rbSlots + this.settings.wrSlots + this.settings.teSlots + this.settings.flexSlots) ? 'FLEX' : 'BN';
+        if (positionCounts.RB < this.settings.rbSlots) return 'RB';
+        if (positionCounts.FLEX < this.settings.flexSlots && 
+          positionCounts.RB + positionCounts.WR + positionCounts.TE < 
+          this.settings.rbSlots + this.settings.wrSlots + this.settings.teSlots + this.settings.flexSlots) 
+        return 'FLEX';
+      break;
       case 'WR':
-        return positionCounts.WR < this.settings.wrSlots ? 'WR' : 
-               (positionCounts.RB + positionCounts.WR + positionCounts.TE < 
-                this.settings.rbSlots + this.settings.wrSlots + this.settings.teSlots + this.settings.flexSlots) ? 'FLEX' : 'BN';
+        if (positionCounts.WR < this.settings.wrSlots) return 'WR';
+        if (positionCounts.FLEX < this.settings.flexSlots && 
+          positionCounts.RB + positionCounts.WR + positionCounts.TE < 
+          this.settings.rbSlots + this.settings.wrSlots + this.settings.teSlots + this.settings.flexSlots) 
+        return 'FLEX';
+      break;
       case 'TE':
-        return positionCounts.TE < this.settings.teSlots ? 'TE' : 
-               (positionCounts.RB + positionCounts.WR + positionCounts.TE < 
-                this.settings.rbSlots + this.settings.wrSlots + this.settings.teSlots + this.settings.flexSlots) ? 'FLEX' : 'BN';
+        if (positionCounts.TE < this.settings.teSlots) return 'TE';
+        if (positionCounts.FLEX < this.settings.flexSlots && 
+          positionCounts.RB + positionCounts.WR + positionCounts.TE < 
+          this.settings.rbSlots + this.settings.wrSlots + this.settings.teSlots + this.settings.flexSlots) 
+        return 'FLEX';
+      break;
       case 'K':
-        return positionCounts.K < this.settings.kSlots ? 'K' : 'BN';
+        if (positionCounts.K < this.settings.kSlots) return 'K';
+        break;
       case 'DEF':
-        return positionCounts.DEF < this.settings.defSlots ? 'DEF' : 'BN';
-      default:
-        return 'BN';
+        if (positionCounts.DEF < this.settings.defSlots) return 'DEF';
+        break;
     }
+    if (benchCount < this.settings.benchSlots) return 'BN';
+    return null;
   }
 }

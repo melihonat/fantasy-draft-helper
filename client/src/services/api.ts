@@ -17,6 +17,7 @@ export interface Player {
 
 export interface LeagueSettings {
   teamCount: number;
+  teamNames: string[];
   rosterSize: number;
   qbSlots: number;
   rbSlots: number;
@@ -61,6 +62,9 @@ export const api = {
   },
   draftPlayer: async (playerId: string, teamId: number): Promise<DraftState> => {
     const response = await axios.post(`${API_BASE_URL}/draft/draft-player`, { playerId, teamId });
+    if (response.data.error) {
+      throw new Error(response.data.error);
+    }
     return response.data.draftState;
   },
   getDraftState: async (): Promise<DraftState> => {

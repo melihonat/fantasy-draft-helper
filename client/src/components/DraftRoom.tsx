@@ -1,7 +1,8 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Player, api, LeagueSettings, DraftState } from '../services/api';
 import { PlayerList, DraftBoard, RecommendationDisplay } from './';
+import DraftResultsViewer from './DraftResultsViewer';
 import LeagueSetup from './LeagueSetup';
 import '../styles/main.css';
 
@@ -12,6 +13,7 @@ const DraftRoom: React.FC = () => {
   const [recommendation, setRecommendation] = useState<Player | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [isDraftComplete, setIsDraftComplete] = useState(false);
 
   useEffect(() => {
     const fetchRecommendation = async () => {
@@ -61,6 +63,7 @@ const DraftRoom: React.FC = () => {
         setAvailablePlayers(availablePlayers.filter(p => p.player_id !== player.player_id));
       } catch (error) {
         console.error('Failed to draft player:', error);
+        alert(`Cannot draft this player: ${(error as Error).message}`);
       }
     }
   };
@@ -98,7 +101,7 @@ const DraftRoom: React.FC = () => {
           )}
           <div className="bg-nfl-gray bg-opacity-20 rounded-lg shadow-lg p-6 border border-nfl-white border-opacity-20">
             <h2 className="text-2xl font-bold mb-4 text-nfl-white">Recommendation</h2>
-            <RecommendationDisplay recommendation={recommendation} draftState={draftState}/>
+            <RecommendationDisplay recommendation={recommendation} draftState={draftState} leagueSettings={leagueSettings}/>
           </div>
         </div>
       </div>

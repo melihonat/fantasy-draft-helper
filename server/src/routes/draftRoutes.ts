@@ -39,18 +39,22 @@ router.get('/league-settings', (req, res) => {
 
 router.post('/draft-player', (req, res) => {
   if (!draftState) {
-    return res.status(400).json({ message: 'Draft has not been initialized' });
+    return res.status(400).json({ error: 'Draft has not been initialized' });
   }
 
   const { playerId, teamId } = req.body;
   const player = allPlayers.find(p => p.player_id === playerId);
 
   if (!player) {
-    return res.status(404).json({ message: 'Player not found' });
+    return res.status(404).json({ error: 'Player not found' });
   }
 
-  draftState.draftPlayer(player, teamId);
-  res.json({ message: 'Player drafted successfully', draftState });
+  try {
+    draftState.draftPlayer(player, teamId);
+    res.json({ message: 'Player drafted successfully', draftState });
+  } catch (error) {
+    res.status(400).json({ error: (error as Error).message });
+  }
 });
 
 router.get('/draft-state', (req, res) => {
@@ -78,9 +82,13 @@ router.post('/recommendation', (req, res) => {
   );
 
   const positionalNeed = updatePositionalNeed(team.players, leagueSettings);
-  const recommendation = getRecommendation(availablePlayers, team.players, positionalNeed, leagueSettings);
-
-  res.json({ recommendation });
+  
+  try {
+    const recommendation = getRecommendation(availablePlayers, team.players, positionalNeed, leagueSettings);
+    res.json({ recommendation });
+  } catch (error) {
+    res.status(400).json({ message: (error as Error).message });
+  }
 });
 
 export default router;

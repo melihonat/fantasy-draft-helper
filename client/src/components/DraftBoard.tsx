@@ -24,6 +24,8 @@ const DraftBoard: React.FC<DraftBoardProps> = ({ draftState, leagueSettings }) =
   );
 
   const renderTeamRoster = (team: { id: number; players: Player[] }) => {
+    console.log(`Rendering team ${team.id} with ${team.players.length} players`);
+    console.log(team.players);
     const rosterSlots: Record<RosterSlotKey, (Player | null)[]> = {
       QB: Array(leagueSettings.qbSlots).fill(null),
       RB: Array(leagueSettings.rbSlots).fill(null),
@@ -36,35 +38,18 @@ const DraftBoard: React.FC<DraftBoardProps> = ({ draftState, leagueSettings }) =
     };
   
     team.players.forEach(player => {
-      const slot = player.slot as RosterSlotKey | undefined;
-      if (slot && slot in rosterSlots) {
+      const slot = player.slot as RosterSlotKey;
+      if (slot in rosterSlots) {
         const availableSlot = rosterSlots[slot].findIndex(s => s === null);
         if (availableSlot !== -1) {
           rosterSlots[slot][availableSlot] = player;
-        } else {
-          // If no slot available, put in bench
-          const benchSlot = rosterSlots.BN.findIndex(s => s === null);
-          if (benchSlot !== -1) {
-            rosterSlots.BN[benchSlot] = player;
-          }
-        }
-      } else {
-        // If no slot assigned or invalid slot, try to put in appropriate position or bench
-        const positionSlot = rosterSlots[player.position as RosterSlotKey]?.findIndex(s => s === null) ?? -1;
-        if (positionSlot !== -1) {
-          rosterSlots[player.position as RosterSlotKey][positionSlot] = player;
-        } else {
-          const benchSlot = rosterSlots.BN.findIndex(s => s === null);
-          if (benchSlot !== -1) {
-            rosterSlots.BN[benchSlot] = player;
-          }
         }
       }
     });
   
     return (
       <div key={team.id} className="team-draft bg-nfl-gray bg-opacity-10 rounded-lg p-4">
-        <h3 className="text-xl font-bold mb-2 text-nfl-white">Team {team.id}</h3>
+        <h3 className="text-xl font-bold mb-2 text-nfl-white">{leagueSettings.teamNames[team.id - 1]}</h3>
         {(Object.entries(rosterSlots) as [RosterSlotKey, (Player | null)[]][]).map(([position, players]) => (
           <div key={position}>
             <h4 className="text-lg font-semibold mt-2">{position}</h4>

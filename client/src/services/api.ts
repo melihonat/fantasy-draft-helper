@@ -1,9 +1,12 @@
 import axios from 'axios';
+import '../styles/main.css';
 
 export interface Player {
   player_id: string;
   full_name: string;
   position: string;
+  slot?: string;
+  draftPickNumber?: number;
   team: string;
   adp: number;
   rank: number;

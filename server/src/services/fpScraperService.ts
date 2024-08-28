@@ -23,13 +23,25 @@ export async function scrapeFantasyProsRankings(): Promise<PlayerRanking[]> {
         throw new Error('ecrData not found or invalid');
       }
 
-      return ecrData.players.map((player: any) => ({
-        rank: player.rank_ecr,
-        name: player.player_name,
-        position: player.player_position_id,
-        team: player.player_team_id,
-        tier: player.tier
-      }));
+      return ecrData.players.map((player: any) => {
+        let name = player.player_name;
+        let position = player.player_position_id;
+        let team = player.player_team_id;
+
+        // Handle team defenses
+        if (position === 'DST') {
+          name = `${team} ${name}`;
+          team = name;
+        }
+
+        return {
+          rank: player.rank_ecr,
+          name: name,
+          position: position,
+          team: team,
+          tier: player.tier
+        };
+      });
     });
 
     console.log(`Scraped ${rankings.length} player rankings`);

@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { Player, api, LeagueSettings, DraftState } from '../services/api';
 import { PlayerList, DraftBoard, RecommendationDisplay } from './';
 import LeagueSetup from './LeagueSetup';
+import '../styles/main.css';
 
 const DraftRoom: React.FC = () => {
   const [leagueSettings, setLeagueSettings] = useState<LeagueSettings | null>(null);
@@ -65,11 +66,15 @@ const DraftRoom: React.FC = () => {
   };
 
   if (isLoading) {
-    return <div>Loading...</div>;
+    return <div className="flex items-center justify-center h-screen bg-nfl-blue">
+      <div className="text-2xl font-bold text-nfl-white">Loading...</div>
+    </div>;
   }
 
   if (error) {
-    return <div>Error: {error}</div>;
+    return <div className="flex items-center justify-center h-screen bg-nfl-blue">
+      <div className="text-xl font-bold text-nfl-red">Error: {error}</div>
+    </div>;
   }
 
   if (!leagueSettings) {
@@ -77,12 +82,25 @@ const DraftRoom: React.FC = () => {
   }
 
   return (
-    <div className="draft-room">
-      <h1>Fantasy Football Draft Room</h1>
-      <div className="draft-content">
-        <PlayerList players={availablePlayers} onDraft={draftPlayer} />
-        {draftState && <DraftBoard draftState={draftState} />}
-        <RecommendationDisplay recommendation={recommendation} />
+    <div className="min-h-screen bg-nfl-blue text-nfl-white">
+      <div className="container mx-auto px-4 py-8">
+        <h1 className="text-5xl font-extrabold mb-8 text-center text-nfl-white shadow-text">Fantasy Football Draft Room</h1>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          <div className="bg-nfl-gray bg-opacity-20 rounded-lg shadow-lg p-6 border border-nfl-white border-opacity-20">
+            <h2 className="text-2xl font-bold mb-4 text-nfl-white">Available Players</h2>
+            <PlayerList players={availablePlayers} onDraft={draftPlayer} />
+          </div>
+          {draftState && (
+            <div className="bg-nfl-gray bg-opacity-20 rounded-lg shadow-lg p-6 border border-nfl-white border-opacity-20">
+              <h2 className="text-2xl font-bold mb-4 text-nfl-white">Draft Board</h2>
+              <DraftBoard draftState={draftState} leagueSettings={leagueSettings} />
+            </div>
+          )}
+          <div className="bg-nfl-gray bg-opacity-20 rounded-lg shadow-lg p-6 border border-nfl-white border-opacity-20">
+            <h2 className="text-2xl font-bold mb-4 text-nfl-white">Recommendation</h2>
+            <RecommendationDisplay recommendation={recommendation} draftState={draftState}/>
+          </div>
+        </div>
       </div>
     </div>
   );

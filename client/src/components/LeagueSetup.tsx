@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { LeagueSettings, api } from '../services/api';
+import { LeagueSettings } from '../services/api';
 
 interface LeagueSetupProps {
   onSettingsSubmit: (settings: LeagueSettings) => Promise<void>;
@@ -33,22 +33,28 @@ const LeagueSetup: React.FC<LeagueSetupProps> = ({ onSettingsSubmit }) => {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="league-setup">
-      <h2>League Settings</h2>
-      <div>
-        <label>
-          Number of Teams:
-          <input type="number" name="teamCount" value={settings.teamCount} onChange={handleChange} min="4" max="16" />
-        </label>
+    <form onSubmit={handleSubmit} className="league-setup bg-nfl-blue text-nfl-white p-8 rounded-lg shadow-lg max-w-md mx-auto">
+      <h2 className="text-3xl font-bold mb-6 text-center">League Settings</h2>
+      <div className="space-y-4">
+        <div>
+          <label className="block mb-1">
+            Number of Teams:
+            <input type="number" name="teamCount" value={settings.teamCount} onChange={handleChange} min="4" max="16"
+              className="w-full mt-1 bg-nfl-gray bg-opacity-20 text-nfl-white rounded p-2" />
+          </label>
+        </div>
+        <div>
+          <label className="block mb-1">
+            Roster Size:
+            <input type="number" name="rosterSize" value={settings.rosterSize} onChange={handleChange} min="10" max="20"
+              className="w-full mt-1 bg-nfl-gray bg-opacity-20 text-nfl-white rounded p-2" />
+          </label>
+        </div>
+        {/* Add more input fields for other settings */}
       </div>
-      <div>
-        <label>
-          Roster Size:
-          <input type="number" name="rosterSize" value={settings.rosterSize} onChange={handleChange} min="10" max="20" />
-        </label>
-      </div>
-      {/* Add more input fields for other settings */}
-      <button type="submit">Save Settings</button>
+      <button type="submit" className="w-full mt-6 bg-nfl-red hover:bg-red-700 text-nfl-white font-bold py-2 px-4 rounded transition duration-300 ease-in-out">
+        Save Settings
+      </button>
     </form>
   );
 };

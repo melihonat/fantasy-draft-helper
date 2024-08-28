@@ -25,7 +25,7 @@ export async function getPlayers(): Promise<Player[]> {
           player_id: player.player_id,
           full_name: player.full_name,
           position: player.position,
-          team: player.team_abbr,
+          team: player.team,
           adp: ranking ? ranking.rank : 9999,
           rank: player.search_rank || 9999,
           cbs_adp: player.cbs_adp || null,
@@ -35,35 +35,26 @@ export async function getPlayers(): Promise<Player[]> {
       });
 
     // Add defenses
-    const defenses: Player[] = [
-      "Arizona Cardinals", "Atlanta Falcons", "Baltimore Ravens", "Buffalo Bills",
-      "Carolina Panthers", "Chicago Bears", "Cincinnati Bengals", "Cleveland Browns",
-      "Dallas Cowboys", "Denver Broncos", "Detroit Lions", "Green Bay Packers",
-      "Houston Texans", "Indianapolis Colts", "Jacksonville Jaguars", "Kansas City Chiefs",
-      "Las Vegas Raiders", "Los Angeles Chargers", "Los Angeles Rams", "Miami Dolphins",
-      "Minnesota Vikings", "New England Patriots", "New Orleans Saints", "New York Giants",
-      "New York Jets", "Philadelphia Eagles", "Pittsburgh Steelers", "San Francisco 49ers",
-      "Seattle Seahawks", "Tampa Bay Buccaneers", "Tennessee Titans", "Washington Commanders"
-    ].map((name, index) => {
-      const ranking = rankingsMap.get(name + " DST");
-      return {
+    const defenses: Player[] = fantasyProsRankings
+      .filter(r => r.position === 'DST')
+      .map((r, index) => ({
         player_id: `DEF${index + 1}`,
-        full_name: name,
+        full_name: r.name,
         position: "DEF",
-        team: name,
-        adp: ranking ? ranking.rank : 9999,
-        rank: ranking ? ranking.rank : 9999,
+        team: r.team,
+        adp: r.rank,
+        rank: r.rank,
         cbs_adp: null,
         sleeper_adp: null,
         rtsports_adp: null
-      };
-    });
+      }));
 
     const allPlayers = [...mergedPlayers, ...defenses]
       .sort((a, b) => a.adp - b.adp)
       .slice(0, 400);
 
     console.log('Number of players:', allPlayers.length);
+    console.log('Number of defenses:', defenses.length);
     return allPlayers;
   } catch (error) {
     console.error('Error processing players:', error);

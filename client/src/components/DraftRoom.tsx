@@ -60,7 +60,6 @@ const DraftRoom: React.FC = () => {
         setDraftState(response.draftState);
         setAvailablePlayers(availablePlayers.filter(p => p.player_id !== player.player_id));
         if (response.isDraftComplete) {
-          console.log("Setting draft complete to true");
           setIsDraftComplete(true);
         }
       } catch (error) {
@@ -70,9 +69,14 @@ const DraftRoom: React.FC = () => {
     }
   };
 
-  useEffect(() => {
-    console.log("Current draft state:", { isDraftComplete, draftState: !!draftState, leagueSettings: !!leagueSettings });
-  }, [draftState, leagueSettings, isDraftComplete]);
+  const handleNewDraft = useCallback(() => {
+    setIsDraftComplete(false);
+    setDraftState(null);
+    setLeagueSettings(null);
+    setAvailablePlayers([]);
+    setRecommendation(null);
+    setError(null);
+  }, []);
 
   if (isLoading) {
     return <div className="flex items-center justify-center h-screen bg-nfl-blue">
@@ -92,7 +96,7 @@ const DraftRoom: React.FC = () => {
 
   if (isDraftComplete && draftState && leagueSettings) {
     console.log("Rendering Draft Overview");
-    return <DraftOverview draftState={draftState} leagueSettings={leagueSettings} />;
+    return <DraftOverview draftState={draftState} leagueSettings={leagueSettings} onNewDraft={handleNewDraft} />;
   }
 
   return (

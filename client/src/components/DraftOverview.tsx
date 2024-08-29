@@ -4,6 +4,7 @@ import { Player, DraftState, LeagueSettings } from '../services/api';
 interface DraftOverviewProps {
   draftState: DraftState;
   leagueSettings: LeagueSettings;
+  onNewDraft: () => void;
 }
 
 interface TeamOverview {
@@ -13,7 +14,7 @@ interface TeamOverview {
   averageADP: number;
 }
 
-const DraftOverview: React.FC<DraftOverviewProps> = ({ draftState, leagueSettings }) => {
+const DraftOverview: React.FC<DraftOverviewProps> = ({ draftState, leagueSettings, onNewDraft }) => {
   const getTeamOverviews = (): TeamOverview[] => {
     return draftState.teams.map(team => ({
       id: team.id,
@@ -44,6 +45,14 @@ const DraftOverview: React.FC<DraftOverviewProps> = ({ draftState, leagueSetting
             </ul>
           </div>
         ))}
+      </div>
+      <div className="mt-8 text-center">
+        <button
+          onClick={onNewDraft}
+          className="bg-nfl-red hover:bg-red-700 text-white font-bold py-2 px-4 rounded transition duration-300 ease-in-out transform hover:scale-105"
+        >
+          Start New Draft
+        </button>
       </div>
     </div>
   );

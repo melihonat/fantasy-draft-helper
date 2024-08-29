@@ -3,6 +3,15 @@ import path from 'path';
 import { Player } from '../models/Player';
 import { scrapeFantasyProsRankings, PlayerRanking } from './fpScraperService';
 
+function normalizePlayerName(name: string | undefined | null): string {
+  if (!name) {
+    console.warn('Attempted to normalize undefined or null player name');
+    return '';
+  }
+  // Remove suffixes and trim whitespace
+  return name.replace(/\s+(Jr\.|Sr\.|II|III|IV)$/, '').trim();
+}
+
 export async function getPlayers(): Promise<Player[]> {
   try {
     const [fileData, fantasyProsRankings] = await Promise.all([
@@ -13,17 +22,43 @@ export async function getPlayers(): Promise<Player[]> {
       })
     ]);
 
-    const rankingsMap = new Map(fantasyProsRankings.map((r: PlayerRanking) => [r.name, r]));
+    console.log(`Fetched ${fantasyProsRankings.length} rankings from FantasyPros`);
+
+    const rankingsMap = new Map(fantasyProsRankings.map((r: PlayerRanking) => {
+      if (!r.name) {
+        console.warn('Found a FantasyPros ranking with undefined name:', r);
+        return ['', r];
+      }
+      return [normalizePlayerName(r.name), r];
+    }));
 
     const players = Object.values(fileData) as any[];
     
+    console.log(`Loaded ${players.length} players from file`);
+
+    console.log('Sample of players from file:');
+    players.slice(0, 10).forEach((player, index) => {
+      console.log(`${index + 1}. ${player.full_name} (${player.position} - ${player.team})`);
+    });
+
+    console.log('\nSample of players from FantasyPros:');
+    fantasyProsRankings.slice(0, 10).forEach((player, index) => {
+      console.log(`${index + 1}. ${player.name} (${player.position} - ${player.team})`);
+    });
+
     const mergedPlayers: Player[] = players
-      .filter(player => player.position && player.team)
+      .filter(player => {
+        if (!player.position || !player.team) {
+          return false;
+        }
+        return true;
+      })
       .map(player => {
-        const ranking = rankingsMap.get(player.full_name);
+        const normalizedName = normalizePlayerName(player.full_name);
+        const ranking = rankingsMap.get(normalizedName);
         return {
           player_id: player.player_id,
-          full_name: player.full_name,
+          full_name: ranking ? ranking.name : player.full_name, // Use FantasyPros name if available
           position: player.position,
           team: player.team,
           adp: ranking ? ranking.rank : 9999,
@@ -39,9 +74,9 @@ export async function getPlayers(): Promise<Player[]> {
       .filter(r => r.position === 'DST')
       .map((r, index) => ({
         player_id: `DEF${index + 1}`,
-        full_name: r.name,
+        full_name: r.name || `Unknown Defense ${index + 1}`,
         position: "DEF",
-        team: r.team,
+        team: r.team || 'Unknown',
         adp: r.rank,
         rank: r.rank,
         cbs_adp: null,
@@ -52,6 +87,11 @@ export async function getPlayers(): Promise<Player[]> {
     const allPlayers = [...mergedPlayers, ...defenses]
       .sort((a, b) => a.adp - b.adp)
       .slice(0, 400);
+
+    console.log('\nSample of final player list:');
+    allPlayers.slice(0, 10).forEach((player, index) => {
+      console.log(`${index + 1}. ${player.full_name} (${player.position} - ${player.team}) - ADP: ${player.adp}`);
+    });
 
     console.log('Number of players:', allPlayers.length);
     console.log('Number of defenses:', defenses.length);

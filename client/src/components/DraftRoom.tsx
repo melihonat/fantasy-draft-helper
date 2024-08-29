@@ -1,7 +1,6 @@
-
 import React, { useState, useEffect, useCallback } from 'react';
 import { Player, api, LeagueSettings, DraftState } from '../services/api';
-import { PlayerList, DraftBoard, RecommendationDisplay } from './';
+import { PlayerList, DraftBoard, RecommendationDisplay, DraftOverview } from './';
 import LeagueSetup from './LeagueSetup';
 import '../styles/main.css';
 
@@ -16,7 +15,7 @@ const DraftRoom: React.FC = () => {
 
   useEffect(() => {
     const fetchRecommendation = async () => {
-      if (draftState && leagueSettings) {
+      if (draftState && leagueSettings && !isDraftComplete) {
         try {
           const currentTeamId = draftState.teams[draftState.currentPick % draftState.teams.length].id;
           const { recommendation } = await api.getRecommendation(currentTeamId);
@@ -28,7 +27,7 @@ const DraftRoom: React.FC = () => {
     };
 
     fetchRecommendation();
-  }, [draftState, leagueSettings]);
+  }, [draftState, leagueSettings, isDraftComplete]);
 
   const handleSettingsSubmit = async (settings: LeagueSettings) => {
     setIsLoading(true);
@@ -57,10 +56,11 @@ const DraftRoom: React.FC = () => {
           ? (draftState.currentPick - 1) % draftState.teams.length + 1
           : draftState.teams.length - (draftState.currentPick - 1) % draftState.teams.length;
           
-        const updatedState = await api.draftPlayer(player.player_id, currentTeamId);
-        setDraftState(updatedState);
+        const response = await api.draftPlayer(player.player_id, currentTeamId);
+        setDraftState(response.draftState);
         setAvailablePlayers(availablePlayers.filter(p => p.player_id !== player.player_id));
-        if (updatedState.isDraftComplete) {
+        if (response.isDraftComplete) {
+          console.log("Setting draft complete to true");
           setIsDraftComplete(true);
         }
       } catch (error) {
@@ -69,6 +69,10 @@ const DraftRoom: React.FC = () => {
       }
     }
   };
+
+  useEffect(() => {
+    console.log("Current draft state:", { isDraftComplete, draftState: !!draftState, leagueSettings: !!leagueSettings });
+  }, [draftState, leagueSettings, isDraftComplete]);
 
   if (isLoading) {
     return <div className="flex items-center justify-center h-screen bg-nfl-blue">
@@ -84,6 +88,11 @@ const DraftRoom: React.FC = () => {
 
   if (!leagueSettings) {
     return <LeagueSetup onSettingsSubmit={handleSettingsSubmit} />;
+  }
+
+  if (isDraftComplete && draftState && leagueSettings) {
+    console.log("Rendering Draft Overview");
+    return <DraftOverview draftState={draftState} leagueSettings={leagueSettings} />;
   }
 
   return (

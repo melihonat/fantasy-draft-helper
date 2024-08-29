@@ -61,12 +61,15 @@ export const api = {
     const response = await axios.get(`${API_BASE_URL}/draft/league-settings`);
     return response.data;
   },
-  draftPlayer: async (playerId: string, teamId: number): Promise<DraftState> => {
+  draftPlayer: async (playerId: string, teamId: number): Promise<{ draftState: DraftState; isDraftComplete: boolean }> => {
     const response = await axios.post(`${API_BASE_URL}/draft/draft-player`, { playerId, teamId });
     if (response.data.error) {
       throw new Error(response.data.error);
     }
-    return response.data.draftState;
+    return {
+      draftState: response.data.draftState,
+      isDraftComplete: response.data.isDraftComplete
+    };
   },
   getDraftState: async (): Promise<DraftState> => {
     const response = await axios.get(`${API_BASE_URL}/draft/draft-state`);

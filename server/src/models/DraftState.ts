@@ -35,9 +35,13 @@ export class DraftState {
   
     this.optimizeTeamRoster(team);
 
-    if (this.teams.every(team => team.players.length >= this.settings.rosterSize)) {
-      throw new Error('Draft is complete');
+    if (this.isDraftComplete()) {
+      console.log('Draft is now complete');
     }
+  }
+
+  isDraftComplete(): boolean {
+    return this.draftedPlayers.length >= this.settings.teamCount * this.settings.rosterSize;
   }
 
   optimizeTeamRoster(team: Team) {

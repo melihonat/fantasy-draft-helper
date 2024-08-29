@@ -2,7 +2,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Player, api, LeagueSettings, DraftState } from '../services/api';
 import { PlayerList, DraftBoard, RecommendationDisplay } from './';
-import DraftResultsViewer from './DraftResultsViewer';
 import LeagueSetup from './LeagueSetup';
 import '../styles/main.css';
 
@@ -61,6 +60,9 @@ const DraftRoom: React.FC = () => {
         const updatedState = await api.draftPlayer(player.player_id, currentTeamId);
         setDraftState(updatedState);
         setAvailablePlayers(availablePlayers.filter(p => p.player_id !== player.player_id));
+        if (updatedState.isDraftComplete) {
+          setIsDraftComplete(true);
+        }
       } catch (error) {
         console.error('Failed to draft player:', error);
         alert(`Cannot draft this player: ${(error as Error).message}`);

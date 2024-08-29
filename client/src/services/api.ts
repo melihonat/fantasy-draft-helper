@@ -40,6 +40,7 @@ export interface DraftState {
   currentPick: number;
   draftedPlayers: Player[];
   getCurrentTeam: () => { id: number; players: Player[] };
+  isDraftComplete: boolean;
 }
 
 export interface DraftRecommendation {

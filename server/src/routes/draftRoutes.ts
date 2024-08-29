@@ -51,7 +51,8 @@ router.post('/draft-player', (req, res) => {
 
   try {
     draftState.draftPlayer(player, teamId);
-    res.json({ message: 'Player drafted successfully', draftState });
+    const isDraftComplete = draftState.isDraftComplete();
+    res.json({ message: isDraftComplete ? 'Draft is complete' : 'Player drafted successfully', draftState, isDraftComplete });
   } catch (error) {
     res.status(400).json({ error: (error as Error).message });
   }

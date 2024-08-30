@@ -28,7 +28,7 @@ const RecommendationDisplay: React.FC<RecommendationDisplayProps> = ({ recommend
   }, []);
 
   if (!recommendations || !draftState) {
-    return <div>No recommendations available</div>;
+    return <div className="text-nfl-white text-center">No recommendations available</div>;
   }
 
   const lastDraftedPlayer = draftState.draftedPlayers[draftState.draftedPlayers.length - 1];
@@ -77,7 +77,7 @@ const RecommendationDisplay: React.FC<RecommendationDisplayProps> = ({ recommend
           <img 
             src={getPlayerImageUrl(player)} 
             alt={player.full_name}
-            className="w-16 h-16 object-cover rounded-full mr-4"
+            className="w-16 h-16 object-cover rounded-full ml-5"
             onError={(e) => {
               console.log("Error loading image for:", player.full_name);
               const target = e.target as HTMLImageElement;
@@ -89,11 +89,8 @@ const RecommendationDisplay: React.FC<RecommendationDisplayProps> = ({ recommend
             <p className="font-semibold text-nfl-white text-center">
               {index + 1}. {player.full_name} ({player.position} - {player.team})
             </p>
-            <p className="text-yellow-400 text-center">Recommendation Score: {player.value.toFixed(1)}%</p>
-            <p className="text-nfl-gray text-center">ADP: {player.adp.toFixed(1)}</p>
-            {player.cbs_adp && <p className="text-nfl-gray text-center">CBS ADP: {player.cbs_adp.toFixed(1)}</p>}
-            {player.sleeper_adp && <p className="text-nfl-gray text-center">Sleeper ADP: {player.sleeper_adp.toFixed(1)}</p>}
-            {player.rtsports_adp && <p className="text-nfl-gray text-center">RTSports ADP: {player.rtsports_adp.toFixed(1)}</p>}
+            <p className="text-yellow-400 text-center">Recommendation Score: {player.value?.toFixed(1) ?? "N/A"}%</p>
+            <p className="text-nfl-gray text-center">ADP: {player.adp?.toFixed(1) ?? "N/A"}</p>
           </div>
         </div>
       ))}

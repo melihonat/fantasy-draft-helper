@@ -28,18 +28,19 @@ const DraftOverview: React.FC<DraftOverviewProps> = ({ draftState, leagueSetting
 
   return (
     <div className="draft-overview bg-nfl-blue text-nfl-white p-6 rounded-lg shadow-lg">
-      <h2 className="text-3xl font-bold mb-6 text-center">Draft Overview</h2>
+      <h2 className="text-4xl font-bold mb-8 text-center">Draft Overview</h2>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {teamOverviews.map((team, index) => (
-          <div key={team.id} className="team-card bg-nfl-gray bg-opacity-20 p-4 rounded-lg">
-            <h3 className="text-xl font-bold mb-2">
-              {index + 1}. {team.name}
+          <div key={team.id} className="team-card bg-nfl-gray bg-opacity-20 p-4 rounded-lg shadow">
+            <h3 className="text-xl font-bold mb-2 flex justify-between items-center">
+              <span>{index + 1}. {team.name}</span>
+              <span className="text-sm font-normal text-nfl-red">ADP: {team.averageADP.toFixed(2)}</span>
             </h3>
-            <p className="text-sm mb-2">Average ADP: {team.averageADP.toFixed(2)}</p>
-            <ul className="space-y-1">
+            <ul className="space-y-1 text-sm">
               {team.players.map(player => (
-                <li key={player.player_id} className="text-sm">
-                  {player.full_name} ({player.position} - {player.team}) - ADP: {player.adp.toFixed(1)}
+                <li key={player.player_id} className="flex justify-between items-center">
+                  <span>{player.full_name} ({player.position})</span>
+                  <span className="text-nfl-gray">ADP: {player.adp.toFixed(1)}</span>
                 </li>
               ))}
             </ul>
@@ -49,7 +50,7 @@ const DraftOverview: React.FC<DraftOverviewProps> = ({ draftState, leagueSetting
       <div className="mt-8 text-center">
         <button
           onClick={onNewDraft}
-          className="bg-nfl-red hover:bg-red-700 text-white font-bold py-2 px-4 rounded transition duration-300 ease-in-out transform hover:scale-105"
+          className="bg-nfl-red hover:bg-red-700 text-nfl-white font-bold py-3 px-6 rounded-full transition duration-300 ease-in-out transform hover:scale-105"
         >
           Start New Draft
         </button>

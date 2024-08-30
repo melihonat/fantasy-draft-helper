@@ -71,7 +71,7 @@ const RecommendationDisplay: React.FC<RecommendationDisplayProps> = ({ recommend
 
   return (
     <div className="recommendation">
-      <h2 className="text-xl font-bold mb-4 text-nfl-white">Top Recommended Picks</h2>
+      <h2 className="text-xl font-bold mb-4 text-nfl-white text-center">Top Recommended Picks</h2>
       {recommendations.map((player, index) => (
         <div key={player.player_id} className="mb-4 p-3 bg-nfl-white bg-opacity-10 rounded-lg flex items-center">
           <img 
@@ -85,33 +85,33 @@ const RecommendationDisplay: React.FC<RecommendationDisplayProps> = ({ recommend
               target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(player.full_name)}&background=random&color=fff&size=64`;
             }}
           />
-          <div>
-            <p className="font-semibold text-nfl-white">
+          <div className="flex-grow">
+            <p className="font-semibold text-nfl-white text-center">
               {index + 1}. {player.full_name} ({player.position} - {player.team})
             </p>
-            <p className="text-yellow-400">Recommendation Score: {player.value.toFixed(1)}%</p>
-            <p className="text-nfl-gray">ADP: {player.adp.toFixed(1)}</p>
-            {player.cbs_adp && <p className="text-nfl-gray">CBS ADP: {player.cbs_adp.toFixed(1)}</p>}
-            {player.sleeper_adp && <p className="text-nfl-gray">Sleeper ADP: {player.sleeper_adp.toFixed(1)}</p>}
-            {player.rtsports_adp && <p className="text-nfl-gray">RTSports ADP: {player.rtsports_adp.toFixed(1)}</p>}
+            <p className="text-yellow-400 text-center">Recommendation Score: {player.value.toFixed(1)}%</p>
+            <p className="text-nfl-gray text-center">ADP: {player.adp.toFixed(1)}</p>
+            {player.cbs_adp && <p className="text-nfl-gray text-center">CBS ADP: {player.cbs_adp.toFixed(1)}</p>}
+            {player.sleeper_adp && <p className="text-nfl-gray text-center">Sleeper ADP: {player.sleeper_adp.toFixed(1)}</p>}
+            {player.rtsports_adp && <p className="text-nfl-gray text-center">RTSports ADP: {player.rtsports_adp.toFixed(1)}</p>}
           </div>
         </div>
       ))}
       
-      <h3 className="text-lg font-bold mt-6 mb-2 text-nfl-white">Last Drafted Player</h3>
+      <h3 className="text-lg font-bold mt-6 mb-2 text-nfl-white text-center">Last Drafted Player</h3>
       {lastDraftedPlayer && (
-        <div className="p-3 bg-nfl-white bg-opacity-10 rounded-lg flex items-center">
+        <div className="p-3 bg-nfl-white bg-opacity-10 rounded-lg flex items-center justify-center">
           <img 
             src={getPlayerImageUrl(lastDraftedPlayer)} 
             alt={lastDraftedPlayer.full_name}
-            className="w-16 h-16 rounded-full mr-4"
+            className="w-16 h-16 object-cover rounded-full mr-4"
             onError={(e) => {
               const target = e.target as HTMLImageElement;
               target.onerror = null;
               target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(lastDraftedPlayer.full_name)}&background=random&color=fff&size=64`;
             }}
           />
-          <div>
+          <div className="text-center">
             <p className="text-nfl-white">
               {lastDraftedPlayer.full_name} ({lastDraftedPlayer.position} - {lastDraftedPlayer.team})
             </p>
@@ -120,7 +120,7 @@ const RecommendationDisplay: React.FC<RecommendationDisplayProps> = ({ recommend
         </div>
       )}
       
-      <p className="mt-4 text-nfl-white">Current Pick: {draftState.currentPick}</p>
+      <p className="mt-4 text-nfl-white text-center">Current Pick: {draftState.currentPick}</p>
     </div>
   );
 };

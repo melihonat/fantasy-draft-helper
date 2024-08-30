@@ -15,6 +15,10 @@ export interface Player {
   rtsports_adp: number | null;
 }
 
+export interface DraftRecommendations {
+  recommendations: (Player & { value: number })[];
+}
+
 export interface LeagueSettings {
   teamCount: number;
   teamNames: string[];
@@ -75,8 +79,8 @@ export const api = {
     const response = await axios.get(`${API_BASE_URL}/draft/draft-state`);
     return response.data;
   },
-  getRecommendation: async (teamId: number): Promise<DraftRecommendation> => {
-    const response = await axios.post(`${API_BASE_URL}/draft/recommendation`, { teamId });
+  getRecommendations: async (teamId: number): Promise<DraftRecommendations> => {
+    const response = await axios.post(`${API_BASE_URL}/draft/recommendations`, { teamId });
     return response.data;
   },
 };

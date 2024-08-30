@@ -5,12 +5,17 @@ interface PositionalNeed {
   [key: string]: number;
 }
 
-export function getRecommendation(
+interface PlayerWithValue extends Player {
+  value: number;
+}
+
+export function getRecommendations(
   availablePlayers: Player[],
   draftedPlayers: Player[],
   positionalNeed: PositionalNeed,
-  leagueSettings: LeagueSettings
-): Player {
+  leagueSettings: LeagueSettings,
+  count: number = 3
+): PlayerWithValue[] {
   const sortedPlayers = availablePlayers.sort((a, b) => a.adp - b.adp);
 
   const remainingSlots = getRemainingSlots(draftedPlayers, leagueSettings);
@@ -25,9 +30,14 @@ export function getRecommendation(
     value: calculateValue(player, positionalNeed, draftedPlayers, leagueSettings)
   }));
 
-  return playerValues.reduce((best, current) => 
-    current.value > best.value ? current : best
-  , playerValues[0]);
+  const topPlayers = playerValues.sort((a, b) => b.value - a.value).slice(0, count);
+
+  const totalValue = topPlayers.reduce((sum, player) => sum + player.value, 0);
+
+  return topPlayers.map(player => ({
+    ...player,
+    value: (player.value / totalValue) * 100
+  }));
 }
 
 function getRemainingSlots(draftedPlayers: Player[], leagueSettings: LeagueSettings): Record<string, number> {

@@ -51,6 +51,9 @@ export async function getPlayers(): Promise<Player[]> {
         if (!player.position || !player.team) {
           return false;
         }
+        if (player.full_name === 'Lamar Jackson' && player.position !== 'QB') { // Filter out CB Lamar Jackson
+          return false;
+        }
         return true;
       })
       .map(player => {

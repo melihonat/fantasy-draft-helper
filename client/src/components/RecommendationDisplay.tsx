@@ -3,13 +3,13 @@ import React from 'react';
 import { Player, DraftState, LeagueSettings } from '../services/api';
 
 interface RecommendationDisplayProps {
-  recommendation: Player | null;
+  recommendations: (Player & { value: number })[] | null;
   draftState: DraftState | null;
   leagueSettings: LeagueSettings | null;
 }
 
-const RecommendationDisplay: React.FC<RecommendationDisplayProps> = ({ recommendation, draftState, leagueSettings }) => {
-  if (!recommendation || !draftState) {
+const RecommendationDisplay: React.FC<RecommendationDisplayProps> = ({ recommendations, draftState, leagueSettings }) => {
+  if (!recommendations || !draftState) {
     return <div>No recommendation available</div>;
   }
 
@@ -23,23 +23,28 @@ const RecommendationDisplay: React.FC<RecommendationDisplayProps> = ({ recommend
 
   return (
     <div className="recommendation">
-      <h2 className="text-xl font-bold mb-4">Recommended Pick</h2>
-      <p>
-        {recommendation.full_name} ({recommendation.position} - {recommendation.team})
-      </p>
-      <p>ADP: {recommendation.adp.toFixed(1)}</p>
-      {recommendation.cbs_adp && <p>CBS ADP: {recommendation.cbs_adp.toFixed(1)}</p>}
-      {recommendation.sleeper_adp && <p>Sleeper ADP: {recommendation.sleeper_adp.toFixed(1)}</p>}
-      {recommendation.rtsports_adp && <p>RTSports ADP: {recommendation.rtsports_adp.toFixed(1)}</p>}
+      <h2 className="text-xl font-bold mb-4">Top Recommended Picks</h2>
+      {recommendations.map((player, index) => (
+        <div key={player.player_id} className="mb-4 p-3 bg-nfl-gray bg-opacity-10 rounded">
+          <p className="font-semibold">
+            {index + 1}. {player.full_name} ({player.position} - {player.team})
+          </p>
+          <p>Recommendation Score: {player.value.toFixed(1)}%</p>
+          <p>ADP: {player.adp.toFixed(1)}</p>
+          {player.cbs_adp && <p>CBS ADP: {player.cbs_adp.toFixed(1)}</p>}
+          {player.sleeper_adp && <p>Sleeper ADP: {player.sleeper_adp.toFixed(1)}</p>}
+          {player.rtsports_adp && <p>RTSports ADP: {player.rtsports_adp.toFixed(1)}</p>}
+        </div>
+      ))}
       
       <h3 className="text-lg font-bold mt-4 mb-2">Last Drafted Player</h3>
       {lastDraftedPlayer && (
-        <>
+        <div className="p-3 bg-nfl-gray bg-opacity-10 rounded">
           <p>
             {lastDraftedPlayer.full_name} ({lastDraftedPlayer.position} - {lastDraftedPlayer.team})
           </p>
           <p>Drafted by {lastPickingTeamName}</p>
-        </>
+        </div>
       )}
       
       <p className="mt-4">Current Pick: {draftState.currentPick}</p>

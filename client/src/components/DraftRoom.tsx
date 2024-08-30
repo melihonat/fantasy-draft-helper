@@ -8,25 +8,25 @@ const DraftRoom: React.FC = () => {
   const [leagueSettings, setLeagueSettings] = useState<LeagueSettings | null>(null);
   const [draftState, setDraftState] = useState<DraftState | null>(null);
   const [availablePlayers, setAvailablePlayers] = useState<Player[]>([]);
-  const [recommendation, setRecommendation] = useState<Player | null>(null);
+  const [recommendations, setRecommendations] = useState<(Player & { value: number })[] | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isDraftComplete, setIsDraftComplete] = useState(false);
 
   useEffect(() => {
-    const fetchRecommendation = async () => {
+    const fetchRecommendations = async () => {
       if (draftState && leagueSettings && !isDraftComplete) {
         try {
           const currentTeamId = draftState.teams[draftState.currentPick % draftState.teams.length].id;
-          const { recommendation } = await api.getRecommendation(currentTeamId);
-          setRecommendation(recommendation);
+          const { recommendations } = await api.getRecommendations(currentTeamId);
+          setRecommendations(recommendations);
         } catch (error) {
-          console.error('Failed to fetch recommendation:', error);
+          console.error('Failed to fetch recommendations:', error);
         }
       }
     };
 
-    fetchRecommendation();
+    fetchRecommendations();
   }, [draftState, leagueSettings, isDraftComplete]);
 
   const handleSettingsSubmit = async (settings: LeagueSettings) => {
@@ -74,7 +74,7 @@ const DraftRoom: React.FC = () => {
     setDraftState(null);
     setLeagueSettings(null);
     setAvailablePlayers([]);
-    setRecommendation(null);
+    setRecommendations(null);
     setError(null);
   }, []);
 
@@ -115,8 +115,8 @@ const DraftRoom: React.FC = () => {
             </div>
           )}
           <div className="bg-nfl-gray bg-opacity-20 rounded-lg shadow-lg p-6 border border-nfl-white border-opacity-20">
-            <h2 className="text-2xl font-bold mb-4 text-nfl-white">Recommendation</h2>
-            <RecommendationDisplay recommendation={recommendation} draftState={draftState} leagueSettings={leagueSettings}/>
+            <h2 className="text-2xl font-bold mb-4 text-nfl-white">Recommendations</h2>
+            <RecommendationDisplay recommendations={recommendations} draftState={draftState} leagueSettings={leagueSettings}/>
           </div>
         </div>
       </div>

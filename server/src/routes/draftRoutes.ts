@@ -1,7 +1,7 @@
 import express from 'express';
 import { getPlayers } from '../services/playerService';
 import { Player } from '../models/Player';
-import { getRecommendation, updatePositionalNeed } from '../services/recommendationService';
+import { getRecommendations, updatePositionalNeed } from '../services/recommendationService';
 import { LeagueSettings } from '../models/LeagueSettings';
 import { DraftState } from '../models/DraftState';
 
@@ -67,7 +67,7 @@ router.get('/draft-state', (req, res) => {
   }
 });
 
-router.post('/recommendation', (req, res) => {
+router.post('/recommendations', (req, res) => {
   if (!draftState || !leagueSettings) {
     return res.status(400).json({ message: 'Draft has not been initialized' });
   }
@@ -86,8 +86,8 @@ router.post('/recommendation', (req, res) => {
   const positionalNeed = updatePositionalNeed(team.players, leagueSettings);
   
   try {
-    const recommendation = getRecommendation(availablePlayers, team.players, positionalNeed, leagueSettings);
-    res.json({ recommendation });
+    const recommendations = getRecommendations(availablePlayers, team.players, positionalNeed, leagueSettings);
+    res.json({ recommendations });
   } catch (error) {
     res.status(400).json({ message: (error as Error).message });
   }

@@ -102,7 +102,9 @@ const DraftRoom: React.FC = () => {
   return (
     <div className="min-h-screen bg-nfl-blue text-nfl-white">
       <div className="container mx-auto px-4 py-8">
-        <h1 className="text-5xl font-extrabold mb-8 text-center text-nfl-white shadow-text">Fantasy Football Draft Room</h1>
+        <h1 className="text-5xl font-extrabold mb-8 text-center text-nfl-white shadow-text">
+          Fantasy Football Draft Room
+        </h1>
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           <div className="bg-nfl-gray bg-opacity-20 rounded-lg shadow-lg p-6 border border-nfl-white border-opacity-20">
             <h2 className="text-2xl font-bold mb-4 text-nfl-white">Available Players</h2>
@@ -116,7 +118,11 @@ const DraftRoom: React.FC = () => {
           )}
           <div className="bg-nfl-gray bg-opacity-20 rounded-lg shadow-lg p-6 border border-nfl-white border-opacity-20">
             <h2 className="text-2xl font-bold mb-4 text-nfl-white">Recommendations</h2>
-            <RecommendationDisplay recommendations={recommendations} draftState={draftState} leagueSettings={leagueSettings}/>
+            <RecommendationDisplay 
+              recommendations={recommendations} 
+              draftState={draftState} 
+              leagueSettings={leagueSettings}
+            />
           </div>
         </div>
       </div>

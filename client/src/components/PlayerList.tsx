@@ -11,17 +11,17 @@ const PlayerList: React.FC<PlayerListProps> = ({ players, onDraft }) => {
     <div className="overflow-x-auto">
       <table className="w-full text-left">
         <thead>
-          <tr className="bg-nfl-gray bg-opacity-20">
-            <th className="p-2">Name</th>
-            <th className="p-2">Position</th>
-            <th className="p-2">Team</th>
-            <th className="p-2">ADP</th>
-            <th className="p-2">Action</th>
+          <tr className="bg-nfl-blue bg-opacity-50">
+            <th className="p-2 text-nfl-white">Name</th>
+            <th className="p-2 text-nfl-white">Position</th>
+            <th className="p-2 text-nfl-white">Team</th>
+            <th className="p-2 text-nfl-white">ADP</th>
+            <th className="p-2 text-nfl-white">Action</th>
           </tr>
         </thead>
         <tbody>
           {players.map((player) => (
-            <tr key={player.player_id} className="border-b border-nfl-gray border-opacity-20">
+            <tr key={player.player_id} className="border-b border-nfl-gray border-opacity-20 hover:bg-nfl-blue hover:bg-opacity-25 transition-colors duration-150">
               <td className="p-2">{player.full_name}</td>
               <td className="p-2">{player.position}</td>
               <td className="p-2">{player.team}</td>

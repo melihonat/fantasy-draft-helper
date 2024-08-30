@@ -8,14 +8,15 @@ interface DraftBoardProps {
 
 const DraftBoard: React.FC<DraftBoardProps> = ({ draftState, leagueSettings }) => {
   type RosterSlotKey = 'QB' | 'RB' | 'WR' | 'TE' | 'FLEX' | 'K' | 'DEF' | 'BN';
+
   const renderRosterSlot = (player: Player | null, position: string) => (
-    <li key={player?.player_id || position} className="text-sm bg-nfl-white bg-opacity-10 rounded p-2">
+    <li key={player?.player_id || position} className="text-sm bg-nfl-white bg-opacity-10 rounded p-2 mb-1">
       {player ? (
         <>
           <span className="font-semibold">{player.full_name}</span>
           <span className="text-nfl-gray ml-2">({player.position} - {player.team})</span>
           <span className="text-nfl-red ml-2">ADP: {player.adp.toFixed(1)}</span>
-          <span className="text-nfl-yellow ml-2">Pick: {player.draftPickNumber}</span>
+          <span className="text-yellow-400 ml-2">Pick: {player.draftPickNumber}</span>
         </>
       ) : (
         <span className="text-nfl-gray">{position}</span>
@@ -48,12 +49,12 @@ const DraftBoard: React.FC<DraftBoardProps> = ({ draftState, leagueSettings }) =
     });
   
     return (
-      <div key={team.id} className="team-draft bg-nfl-gray bg-opacity-10 rounded-lg p-4">
-        <h3 className="text-xl font-bold mb-2 text-nfl-white">{leagueSettings.teamNames[team.id - 1]}</h3>
+      <div key={team.id} className="team-draft bg-nfl-gray bg-opacity-10 rounded-lg p-4 mb-4">
+        <h3 className="text-xl font-bold mb-2 text-nfl-white">{leagueSettings?.teamNames[team.id - 1]}</h3>
         {(Object.entries(rosterSlots) as [RosterSlotKey, (Player | null)[]][]).map(([position, players]) => (
           <div key={position}>
-            <h4 className="text-lg font-semibold mt-2">{position}</h4>
-            <ul className="space-y-2">
+            <h4 className="text-lg font-semibold mt-2 text-nfl-white opacity-80">{position}</h4>
+            <ul className="space-y-1">
               {players.map((player, index) => renderRosterSlot(player, `${position}${index + 1}`))}
             </ul>
           </div>

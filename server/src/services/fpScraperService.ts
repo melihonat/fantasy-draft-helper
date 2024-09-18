@@ -27,34 +27,37 @@ export async function fetchFantasyProsRankings(): Promise<PlayerRanking[]> {
     const rankings: PlayerRanking[] = [];
     let currentTier = 0;
 
-    $('#ranking-table tbody tr').each((index, element) => {
+    $('tr.player-row.mpb-player__tr.mpb-player__tr--taken').each((index, element) => {
       const $el = $(element);
       
-      // Check if this is a tier row
-      if ($el.hasClass('tier-row')) {
-        currentTier = parseInt($el.find('.tier-name').text().replace('Tier', '').trim(), 10);
-        return; // Skip to next iteration
+      const rankCell = $el.find('td.sticky-cell.sticky-cell-one.mpb-player__border--taken');
+      const rank = parseInt(rankCell.text().trim(), 10);
+      
+      const playerCell = $el.find('td.player-cell');
+      const name = playerCell.find('a.player-name').text().trim();
+      const teamAndPos = playerCell.find('span.player-team-position').text().trim().split(' ');
+      const team = teamAndPos[0].replace('(', '').replace(')', '');
+      const position = teamAndPos[1];
+
+      // Find the closest previous tier row
+      let tierRow = $el.prev('tr.tier-row');
+      let $currentEl = $el;
+      while (tierRow.length === 0 && $currentEl.prev().length > 0) {
+        $currentEl = $currentEl.prev();
+        tierRow = $currentEl.prev('tr.tier-row');
       }
+      const tier = tierRow.length ? parseInt(tierRow.find('.tier-name').text().replace('Tier', '').trim(), 10) : currentTier;
+      currentTier = tier;
 
-      // Check if this is a player row
-      if ($el.hasClass('player-row')) {
-        const rank = parseInt($el.find('.rank-cell').text().trim(), 10);
-        const playerInfo = $el.find('.player-cell');
-        const name = playerInfo.find('.player-name').text().trim();
-        const teamAndPos = playerInfo.find('.player-team-position').text().trim().split(' ');
-        const team = teamAndPos[0];
-        const position = teamAndPos[1];
-
-        if (rank && name) {
-          rankings.push({ rank, name, team, position, tier: currentTier });
-        }
+      if (rank && name) {
+        rankings.push({ rank, name, team, position, tier });
       }
     });
 
     console.log(`Fetched ${rankings.length} player rankings`);
     if (rankings.length === 0) {
       console.log('No rankings found. HTML structure:');
-      console.log($.html('#ranking-table').slice(0, 500) + '...'); // Log first 500 characters of the table HTML
+      console.log($.html('table#ranking-table').slice(0, 500) + '...'); // Log first 500 characters of the table HTML
     }
     return rankings;
   } catch (error) {

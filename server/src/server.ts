@@ -9,7 +9,7 @@ dotenv.config();
 const app = express();
 
 app.use(cors({
-  origin: process.env.FRONTEND_URL || 'https://nfl-fantasy-draft-assistant-fs2jq1ag7-melihonats-projects.vercel.app',
+  origin: process.env.FRONTEND_URL || 'https://nfl-fantasy-draft-assistant.vercel.app',
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   allowedHeaders: ['Content-Type', 'Authorization']
 }));

@@ -76,11 +76,11 @@ export const api = {
     };
   },
   getDraftState: async (): Promise<DraftState> => {
-    const response = await axios.get(`${API_BASE_URL}/draft/draft-state`);
+    const response = await axios.get(`${API_BASE_URL}/api/draft/draft-state`);
     return response.data;
   },
   getRecommendations: async (teamId: number): Promise<DraftRecommendations> => {
-    const response = await axios.post(`${API_BASE_URL}/draft/recommendations`, { teamId });
+    const response = await axios.post(`${API_BASE_URL}/api/draft/recommendations`, { teamId });
     return response.data;
   },
 };

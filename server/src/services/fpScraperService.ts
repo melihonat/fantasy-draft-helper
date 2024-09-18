@@ -9,7 +9,7 @@ export interface PlayerRanking {
 }
 
 export async function scrapeFantasyProsRankings(): Promise<PlayerRanking[]> {
-  console.log('Starting to scrape FantasyPros rankings with Puppeteer...');
+  console.log('Starting to scrape FantasyPros rankings...');
   const browser = await puppeteer.launch({
     args: ['--no-sandbox', '--disable-setuid-sandbox'],
     executablePath: process.env.PUPPETEER_EXECUTABLE_PATH || puppeteer.executablePath()
@@ -23,7 +23,8 @@ export async function scrapeFantasyProsRankings(): Promise<PlayerRanking[]> {
     const rankings = await page.evaluate(() => {
       const ecrData = (window as any).ecrData;
       if (!ecrData || !ecrData.players) {
-        throw new Error('ecrData not found or invalid');
+        console.log('ecrData not found or invalid');
+        return [];
       }
 
       return ecrData.players.map((player: any) => {

@@ -17,7 +17,7 @@ app.use('/api/draft', draftRoutes);
 if (process.env.NODE_ENV === 'production') {
   app.use(express.static(path.join(__dirname, '../../client/build')));
 
-  app.get('*', (req, res) => {
+  app.get('*', (req: express.Request, res: express.Response) => {
     res.sendFile(path.join(__dirname, '../../client/build/index.html'));
   });
 }

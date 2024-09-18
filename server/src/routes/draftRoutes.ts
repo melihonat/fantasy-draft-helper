@@ -1,4 +1,4 @@
-import express from 'express';
+import express, { Request, Response } from 'express';
 import { getPlayers } from '../services/playerService';
 import { Player } from '../models/Player';
 import { getRecommendations, updatePositionalNeed } from '../services/recommendationService';
@@ -11,7 +11,7 @@ let allPlayers: Player[] = [];
 let leagueSettings: LeagueSettings | null = null;
 let draftState: DraftState | null = null;
 
-router.get('/players', async (req, res) => {
+router.get('/players', async (req: Request, res: Response) => {
   try {
     if (allPlayers.length === 0) {
       allPlayers = await getPlayers();
@@ -23,13 +23,13 @@ router.get('/players', async (req, res) => {
   }
 });
 
-router.post('/league-settings', (req, res) => {
+router.post('/league-settings', (req: Request, res: Response) => {
   leagueSettings = req.body as LeagueSettings;
   draftState = new DraftState(leagueSettings);
   res.json({ message: 'League settings saved successfully' });
 });
 
-router.get('/league-settings', (req, res) => {
+router.get('/league-settings', (req: Request, res: Response) => {
   if (leagueSettings) {
     res.json(leagueSettings);
   } else {
@@ -37,7 +37,7 @@ router.get('/league-settings', (req, res) => {
   }
 });
 
-router.post('/draft-player', (req, res) => {
+router.post('/draft-player', (req: Request, res: Response) => {
   if (!draftState) {
     return res.status(400).json({ error: 'Draft has not been initialized' });
   }
@@ -59,7 +59,7 @@ router.post('/draft-player', (req, res) => {
   }
 });
 
-router.get('/draft-state', (req, res) => {
+router.get('/draft-state', (req: Request, res: Response) => {
   if (draftState) {
     res.json(draftState);
   } else {
@@ -67,7 +67,7 @@ router.get('/draft-state', (req, res) => {
   }
 });
 
-router.post('/recommendations', (req, res) => {
+router.post('/recommendations', (req: Request, res: Response) => {
   if (!draftState || !leagueSettings) {
     return res.status(400).json({ message: 'Draft has not been initialized' });
   }

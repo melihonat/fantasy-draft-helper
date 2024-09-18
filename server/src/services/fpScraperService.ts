@@ -10,7 +10,10 @@ export interface PlayerRanking {
 
 export async function scrapeFantasyProsRankings(): Promise<PlayerRanking[]> {
   console.log('Starting to scrape FantasyPros rankings with Puppeteer...');
-  const browser = await puppeteer.launch();
+  const browser = await puppeteer.launch({
+    args: ['--no-sandbox', '--disable-setuid-sandbox'],
+    executablePath: process.env.PUPPETEER_EXECUTABLE_PATH || puppeteer.executablePath()
+  });
   const page = await browser.newPage();
   
   try {

@@ -106,7 +106,7 @@ export async function getPlayers(): Promise<Player[]> {
 }
 
 async function readPlayerFile(): Promise<any> {
-  const filePath = path.join(__dirname, 'all_nfl_players.json');
+  const filePath = path.join(__dirname, '..', '..', 'src', 'services', 'all_nfl_players.json');
   console.log("Attempting to read file:", filePath);
 
   try {

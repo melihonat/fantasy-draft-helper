@@ -55,18 +55,18 @@ const API_BASE_URL = process.env.NODE_ENV === 'production' ? '' : 'http://localh
 
 export const api = {
   getPlayers: async (): Promise<Player[]> => {
-    const response = await axios.get(`${API_BASE_URL}/draft/players`);
+    const response = await axios.get(`${API_BASE_URL}/api/draft/players`);
     return response.data;
   },
   setLeagueSettings: async (settings: LeagueSettings): Promise<void> => {
-    await axios.post(`${API_BASE_URL}/draft/league-settings`, settings);
+    await axios.post(`${API_BASE_URL}/api/draft/league-settings`, settings);
   },
   getLeagueSettings: async (): Promise<LeagueSettings> => {
     const response = await axios.get(`${API_BASE_URL}/api/draft/league-settings`);
     return response.data;
   },
   draftPlayer: async (playerId: string, teamId: number): Promise<{ draftState: DraftState; isDraftComplete: boolean }> => {
-    const response = await axios.post(`${API_BASE_URL}/draft/draft-player`, { playerId, teamId });
+    const response = await axios.post(`${API_BASE_URL}/api/draft/draft-player`, { playerId, teamId });
     if (response.data.error) {
       throw new Error(response.data.error);
     }

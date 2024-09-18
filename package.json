@@ -1,6 +1,9 @@
 {
     "name": "fantasy-draft-helper",
     "version": "1.0.0",
+    "engines": {
+        "node": "18.x"
+    },
     "scripts": {
         "start": "concurrently \"npm run server\" \"npm run client\"",
         "server": "cd server && npm run dev",
@@ -9,7 +12,8 @@
         "install-all": "npm install && cd client && npm install && cd ../server && npm install",
         "build:client": "cd client && npm install && npm run build",
         "build:server": "cd server && npm install && npm run build",
-        "build": "npm run build:client && npm run build:server"
+        "build": "npm run build:client && npm run build:server",
+        "heroku-postbuild": "npm run build"
     },
     "devDependencies": {
         "autoprefixer": "^10.4.20",

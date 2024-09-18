@@ -51,7 +51,7 @@ export interface DraftRecommendation {
   recommendation: Player;
 }
 
-export const API_BASE_URL = 'https://nfl-fantasy-draft-assistant.vercel.app';
+export const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:5000/api';
 
 export const api = {
   getPlayers: async (): Promise<Player[]> => {

@@ -7,7 +7,13 @@ import draftRoutes from './routes/draftRoutes';
 dotenv.config();
 
 const app = express();
-app.use(cors());
+
+app.use(cors({
+  origin: process.env.FRONTEND_URL || 'https://nfl-fantasy-draft-assistant-fs2jq1ag7-melihonats-projects.vercel.app',
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
+
 app.use(express.json());
 
 // API routes

@@ -59,6 +59,7 @@ export async function getPlayers(): Promise<Player[]> {
       .map(player => {
         const normalizedName = normalizePlayerName(player.full_name);
         const ranking = rankingsMap.get(normalizedName);
+        console.log(`Processing player: ${player.full_name}, ADP: ${ranking ? ranking.rank : 'Not found'}`);
         return {
           player_id: player.player_id,
           full_name: ranking ? ranking.name : player.full_name, // Use FantasyPros name if available

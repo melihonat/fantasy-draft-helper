@@ -27,6 +27,7 @@ export async function scrapeFantasyProsRankings(): Promise<PlayerRanking[]> {
       }
 
       return ecrData.players.map((player: any) => {
+        console.log(`Scraped player: ${player.player_name}, ADP: ${player.rank_ecr}`);
         let name = player.player_name;
         let position = player.player_position_id;
         let team = player.player_team_id;

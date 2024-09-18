@@ -26,14 +26,16 @@ export async function fetchFantasyProsRankings(): Promise<PlayerRanking[]> {
     
     const rankings: PlayerRanking[] = [];
     
-    $('#ranking-table tbody tr').each((index, element) => {
+    $('table.table-responsive tbody tr').each((index, element) => {
       const $el = $(element);
-      const rank = parseInt($el.find('.rank-number').text().trim(), 10);
-      const tierText = $el.find('.tier-text').text().trim();
-      const tier = tierText ? parseInt(tierText.replace('Tier', ''), 10) : 0;
-      const name = $el.find('.player-name').text().trim();
-      const team = $el.find('.player-team').text().trim();
-      const position = $el.find('.player-position').text().trim();
+      const rank = parseInt($el.find('td.rank-position').text().trim(), 10);
+      const playerInfo = $el.find('td.player-label');
+      const name = playerInfo.find('a.player-name').text().trim();
+      const team = playerInfo.find('small').text().trim().replace(/[()]/g, '');
+      const position = $el.find('td.position').text().trim();
+      
+      const tierElement = $el.prev('tr.tier-row');
+      const tier = tierElement.length ? parseInt(tierElement.find('td').text().replace('Tier', '').trim(), 10) : 0;
       
       if (rank && name) {
         rankings.push({ rank, name, team, position, tier });
@@ -43,7 +45,7 @@ export async function fetchFantasyProsRankings(): Promise<PlayerRanking[]> {
     console.log(`Fetched ${rankings.length} player rankings`);
     if (rankings.length === 0) {
       console.log('No rankings found. HTML structure:');
-      console.log($.html('#ranking-table').slice(0, 500) + '...'); // Log first 500 characters of the table HTML
+      console.log($.html('table.table-responsive').slice(0, 500) + '...'); // Log first 500 characters of the table HTML
     }
     return rankings;
   } catch (error) {

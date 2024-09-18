@@ -1,4 +1,5 @@
-import puppeteer from 'puppeteer';
+import axios from 'axios';
+import * as cheerio from 'cheerio';
 
 export interface PlayerRanking {
   rank: number;
@@ -8,51 +9,33 @@ export interface PlayerRanking {
   tier: number;
 }
 
-export async function scrapeFantasyProsRankings(): Promise<PlayerRanking[]> {
-  console.log('Starting to scrape FantasyPros rankings...');
-  const browser = await puppeteer.launch({
-    args: ['--no-sandbox', '--disable-setuid-sandbox'],
-    executablePath: process.env.PUPPETEER_EXECUTABLE_PATH || puppeteer.executablePath()
-  });
-  const page = await browser.newPage();
-  
+export async function fetchFantasyProsRankings(): Promise<PlayerRanking[]> {
+  console.log('Fetching FantasyPros rankings...');
   try {
-    await page.goto('https://www.fantasypros.com/nfl/rankings/ppr-cheatsheets.php', { waitUntil: 'networkidle0' });
-    console.log('Page loaded. Extracting rankings...');
-
-    const rankings = await page.evaluate(() => {
-      const ecrData = (window as any).ecrData;
-      if (!ecrData || !ecrData.players) {
-        console.log('ecrData not found or invalid');
-        return [];
+    const response = await axios.get('https://www.fantasypros.com/nfl/rankings/ppr-cheatsheets.php');
+    const $ = cheerio.load(response.data);
+    
+    const rankings: PlayerRanking[] = [];
+    
+    $('#ranking-table tbody tr').each((index, element) => {
+      const $el = $(element);
+      const rank = parseInt($el.find('.rank-number').text().trim(), 10);
+      const tierText = $el.find('.tier-text').text().trim();
+      const tier = tierText ? parseInt(tierText.replace('Tier', ''), 10) : 0;
+      const name = $el.find('.player-name').text().trim();
+      const team = $el.find('.player-team').text().trim();
+      const position = $el.find('.player-position').text().trim();
+      
+      if (rank && name) {
+        rankings.push({ rank, name, team, position, tier });
       }
-
-      return ecrData.players.map((player: any) => {
-        console.log(`Scraped player: ${player.player_name}, ADP: ${player.rank_ecr}`);
-        let name = player.player_name;
-        let position = player.player_position_id;
-        let team = player.player_team_id;
-
-        // Handle team defenses
-        if (position === 'DST') {
-          name = `${team} ${name}`;
-          team = name;
-        }
-
-        return {
-          rank: player.rank_ecr,
-          name: name,
-          position: position,
-          team: team,
-          tier: player.tier
-        };
-      });
     });
 
-    console.log(`Scraped ${rankings.length} player rankings`);
+    console.log(`Fetched ${rankings.length} player rankings`);
     return rankings;
-  } finally {
-    await browser.close();
+  } catch (error) {
+    console.error('Error fetching FantasyPros rankings:', error);
+    return [];
   }
 }
 

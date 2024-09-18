@@ -1,7 +1,7 @@
 import { promises as fs } from 'fs';
 import path from 'path';
 import { Player } from '../models/Player';
-import { scrapeFantasyProsRankings, PlayerRanking } from './fpScraperService';
+import { fetchFantasyProsRankings, PlayerRanking } from './fpScraperService';
 
 function normalizePlayerName(name: string | undefined | null): string {
   if (!name) {
@@ -16,7 +16,7 @@ export async function getPlayers(): Promise<Player[]> {
   try {
     const [fileData, fantasyProsRankings] = await Promise.all([
       readPlayerFile(),
-      scrapeFantasyProsRankings().catch(error => {
+      fetchFantasyProsRankings().catch(error => {
         console.error('Error scraping FantasyPros rankings:', error);
         return [] as PlayerRanking[];
       })

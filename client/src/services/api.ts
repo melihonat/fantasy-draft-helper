@@ -51,7 +51,7 @@ export interface DraftRecommendation {
   recommendation: Player;
 }
 
-const API_BASE_URL = '/api/draft';
+const API_BASE_URL = process.env.NODE_ENV === 'production' ? '' : 'http://localhost:5000';
 
 export const api = {
   getPlayers: async (): Promise<Player[]> => {

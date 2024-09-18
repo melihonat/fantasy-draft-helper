@@ -27,30 +27,29 @@ export async function fetchFantasyProsRankings(): Promise<PlayerRanking[]> {
     const rankings: PlayerRanking[] = [];
     let currentTier = 0;
 
-    $('tr.player-row.mpb-player__tr.mpb-player__tr--taken').each((index, element) => {
+    $('table#ranking-table tbody tr').each((index, element) => {
       const $el = $(element);
       
-      const rankCell = $el.find('td.sticky-cell.sticky-cell-one.mpb-player__border--taken');
-      const rank = parseInt(rankCell.text().trim(), 10);
-      
-      const playerCell = $el.find('td.player-cell');
-      const name = playerCell.find('a.player-name').text().trim();
-      const teamAndPos = playerCell.find('span.player-team-position').text().trim().split(' ');
-      const team = teamAndPos[0].replace('(', '').replace(')', '');
-      const position = teamAndPos[1];
-
-      // Find the closest previous tier row
-      let tierRow = $el.prev('tr.tier-row');
-      let $currentEl = $el;
-      while (tierRow.length === 0 && $currentEl.prev().length > 0) {
-        $currentEl = $currentEl.prev();
-        tierRow = $currentEl.prev('tr.tier-row');
+      // Check if this is a tier row
+      if ($el.hasClass('tier-row')) {
+        currentTier = parseInt($el.find('.tier-name').text().replace('Tier', '').trim(), 10);
+        return; // Skip to next iteration
       }
-      const tier = tierRow.length ? parseInt(tierRow.find('.tier-name').text().replace('Tier', '').trim(), 10) : currentTier;
-      currentTier = tier;
 
-      if (rank && name) {
-        rankings.push({ rank, name, team, position, tier });
+      // Check if this is a player row
+      if ($el.hasClass('player-row')) {
+        const rankCell = $el.find('td.sticky-cell.sticky-cell-one');
+        const rank = parseInt(rankCell.text().trim(), 10);
+        
+        const playerCell = $el.find('td.player-label');
+        const name = playerCell.find('a.player-name').text().trim();
+        const teamAndPos = playerCell.find('small').text().trim().split(' ');
+        const team = teamAndPos[0].replace('(', '').replace(')', '');
+        const position = teamAndPos[1];
+
+        if (rank && name) {
+          rankings.push({ rank, name, team, position, tier: currentTier });
+        }
       }
     });
 

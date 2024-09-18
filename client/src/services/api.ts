@@ -62,7 +62,7 @@ export const api = {
     await axios.post(`${API_BASE_URL}/draft/league-settings`, settings);
   },
   getLeagueSettings: async (): Promise<LeagueSettings> => {
-    const response = await axios.get(`${API_BASE_URL}/draft/league-settings`);
+    const response = await axios.get(`${API_BASE_URL}/api/draft/league-settings`);
     return response.data;
   },
   draftPlayer: async (playerId: string, teamId: number): Promise<{ draftState: DraftState; isDraftComplete: boolean }> => {

@@ -11,7 +11,7 @@ export interface PlayerRanking {
 
 export async function getFantasyProsRankings(): Promise<PlayerRanking[]> {
   try {
-    const filePath = path.join(__dirname, 'fantasyProsRankings.json');
+    const filePath = path.join(__dirname, '..', '..', 'src', 'services', 'fantasyProsRankings.json');
     const data = await fs.readFile(filePath, 'utf-8');
     return JSON.parse(data) as PlayerRanking[];
   } catch (error) {

@@ -51,22 +51,22 @@ export interface DraftRecommendation {
   recommendation: Player;
 }
 
-const API_BASE_URL = process.env.NODE_ENV === 'production' ? '' : 'http://localhost:5000';
+const API_BASE_URL = '/api';
 
 export const api = {
   getPlayers: async (): Promise<Player[]> => {
-    const response = await axios.get(`${API_BASE_URL}/api/draft/players`);
+    const response = await axios.get(`${API_BASE_URL}/draft/players`);
     return response.data;
   },
   setLeagueSettings: async (settings: LeagueSettings): Promise<void> => {
-    await axios.post(`${API_BASE_URL}/api/draft/league-settings`, settings);
+    await axios.post(`${API_BASE_URL}/draft/league-settings`, settings);
   },
   getLeagueSettings: async (): Promise<LeagueSettings> => {
-    const response = await axios.get(`${API_BASE_URL}/api/draft/league-settings`);
+    const response = await axios.get(`${API_BASE_URL}/draft/league-settings`);
     return response.data;
   },
   draftPlayer: async (playerId: string, teamId: number): Promise<{ draftState: DraftState; isDraftComplete: boolean }> => {
-    const response = await axios.post(`${API_BASE_URL}/api/draft/draft-player`, { playerId, teamId });
+    const response = await axios.post(`${API_BASE_URL}/draft/draft-player`, { playerId, teamId });
     if (response.data.error) {
       throw new Error(response.data.error);
     }
@@ -76,11 +76,11 @@ export const api = {
     };
   },
   getDraftState: async (): Promise<DraftState> => {
-    const response = await axios.get(`${API_BASE_URL}/api/draft/draft-state`);
+    const response = await axios.get(`${API_BASE_URL}/draft/draft-state`);
     return response.data;
   },
   getRecommendations: async (teamId: number): Promise<DraftRecommendations> => {
-    const response = await axios.post(`${API_BASE_URL}/api/draft/recommendations`, { teamId });
+    const response = await axios.post(`${API_BASE_URL}/draft/recommendations`, { teamId });
     return response.data;
   },
 };

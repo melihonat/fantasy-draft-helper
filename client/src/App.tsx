@@ -1,7 +1,7 @@
 import React from 'react';
 import logo from './logo.svg';
 import './App.css';
-import { DraftRoom } from './components';
+import DraftRoom from './components/DraftRoom';
 
 function App() {
   return (

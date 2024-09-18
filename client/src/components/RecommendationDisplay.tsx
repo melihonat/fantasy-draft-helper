@@ -72,36 +72,37 @@ const RecommendationDisplay: React.FC<RecommendationDisplayProps> = ({ recommend
   return (
     <div className="recommendation">
       <h2 className="text-xl font-bold mb-4 text-nfl-white text-center">Top Recommended Picks</h2>
-      {recommendations.map((player, index) => (
-        <div key={player.player_id} className="mb-4 p-3 bg-nfl-white bg-opacity-10 rounded-lg flex items-center">
-          <img 
-            src={getPlayerImageUrl(player)} 
-            alt={player.full_name}
-            className="w-16 h-16 object-cover rounded-full ml-5"
-            onError={(e) => {
-              console.log("Error loading image for:", player.full_name);
-              const target = e.target as HTMLImageElement;
-              target.onerror = null;
-              target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(player.full_name)}&background=random&color=fff&size=64`;
-            }}
-          />
-          <div className="flex-grow">
-            <p className="font-semibold text-nfl-white text-center">
-              {index + 1}. {player.full_name} ({player.position} - {player.team})
-            </p>
-            <p className="text-yellow-400 text-center">Recommendation Score: {player.value?.toFixed(1) ?? "N/A"}%</p>
-            <p className="text-nfl-gray text-center">ADP: {player.adp?.toFixed(1) ?? "N/A"}</p>
+      <div className="space-y-4 max-h-[calc(100vh-400px)] overflow-y-auto pr-2">
+        {recommendations.map((player, index) => (
+          <div key={player.player_id} className="mb-4 p-3 bg-nfl-white bg-opacity-10 rounded-lg flex items-center transition-all duration-300 ease-in-out hover:bg-opacity-20">
+            <img 
+              src={getPlayerImageUrl(player)} 
+              alt={player.full_name}
+              className="w-16 h-16 object-cover rounded-full mr-4 border-2 border-nfl-white"
+              onError={(e) => {
+                const target = e.target as HTMLImageElement;
+                target.onerror = null;
+                target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(player.full_name)}&background=random&color=fff&size=64`;
+              }}
+            />
+            <div className="flex-grow">
+              <p className="font-semibold text-nfl-white">
+                {index + 1}. {player.full_name} ({player.position} - {player.team})
+              </p>
+              <p className="text-yellow-400 text-center">Recommendation Score: {player.value?.toFixed(1) ?? "N/A"}%</p>
+              <p className="text-nfl-gray text-center">ADP: {player.adp?.toFixed(1) ?? "N/A"}</p>
+            </div>
           </div>
-        </div>
-      ))}
+        ))}
+      </div>
       
       <h3 className="text-lg font-bold mt-6 mb-2 text-nfl-white text-center">Last Drafted Player</h3>
       {lastDraftedPlayer && (
-        <div className="p-3 bg-nfl-white bg-opacity-10 rounded-lg flex items-center justify-center">
+        <div className="p-3 bg-nfl-white bg-opacity-10 rounded-lg flex items-center justify-center transition-all duration-300 ease-in-out hover:bg-opacity-20">
           <img 
             src={getPlayerImageUrl(lastDraftedPlayer)} 
             alt={lastDraftedPlayer.full_name}
-            className="w-16 h-16 object-cover rounded-full mr-4"
+            className="w-16 h-16 object-cover rounded-full mr-4 border-2 border-nfl-white"
             onError={(e) => {
               const target = e.target as HTMLImageElement;
               target.onerror = null;
@@ -109,7 +110,7 @@ const RecommendationDisplay: React.FC<RecommendationDisplayProps> = ({ recommend
             }}
           />
           <div className="text-center">
-            <p className="text-nfl-white">
+            <p className="text-nfl-white font-semibold">
               {lastDraftedPlayer.full_name} ({lastDraftedPlayer.position} - {lastDraftedPlayer.team})
             </p>
             <p className="text-nfl-gray">Drafted by {lastPickingTeamName}</p>
@@ -117,7 +118,7 @@ const RecommendationDisplay: React.FC<RecommendationDisplayProps> = ({ recommend
         </div>
       )}
       
-      <p className="mt-4 text-nfl-white text-center">Current Pick: {draftState.currentPick}</p>
+      <p className="mt-4 text-nfl-white text-center font-semibold">Current Pick: {draftState.currentPick}</p>
     </div>
   );
 };

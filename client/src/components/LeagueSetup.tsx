@@ -49,70 +49,123 @@ const LeagueSetup: React.FC<LeagueSetupProps> = ({ onSettingsSubmit }) => {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="league-setup bg-nfl-blue bg-opacity-90 text-nfl-white p-8 rounded-lg shadow-xl max-w-4xl mx-auto">
-      <h2 className="text-3xl font-bold mb-6 text-center">League Settings</h2>
-      
-      <div className="mb-8">
-        <h3 className="text-xl font-semibold mb-4">Number of Teams</h3>
-        <div className="flex items-center">
-          <input 
-            type="number" 
-            name="teamCount" 
-            value={settings.teamCount} 
-            onChange={handleChange}
-            min="4" 
-            max="16"
-            className="w-full mt-1 bg-nfl-gray bg-opacity-20 text-nfl-white rounded p-2 focus:outline-none focus:ring-2 focus:ring-nfl-red" 
-          />
+    <div className="min-h-screen bg-gradient-to-br from-nfl-blue to-nfl-red text-nfl-white p-4 md:p-8">
+      <form onSubmit={handleSubmit} className="league-setup bg-white bg-opacity-10 p-6 md:p-8 rounded-lg shadow-xl max-w-4xl mx-auto backdrop-filter backdrop-blur-sm border border-white border-opacity-20">
+        <h2 className="text-3xl md:text-4xl font-bold mb-8 text-center">League Settings</h2>
+        
+        <div className="mb-8">
+          <h3 className="text-xl font-semibold mb-4">Number of Teams</h3>
+          <div className="flex items-center">
+            <input 
+              type="number" 
+              name="teamCount" 
+              value={settings.teamCount} 
+              onChange={handleChange}
+              min="4" 
+              max="16"
+              className="w-full mt-1 bg-nfl-blue bg-opacity-50 text-nfl-white rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-nfl-red transition duration-300 ease-in-out" 
+            />
+          </div>
         </div>
-      </div>
-      
-      <div className="mb-8">
-        <h3 className="text-xl font-semibold mb-4">Team Names</h3>
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-          {settings.teamNames.map((teamName, index) => (
-            <div key={index}>
-              <label className="block mb-2 font-semibold">
-                Team {index + 1}:
-                <input
-                  type="text"
-                  name={`teamName${index}`}
-                  value={teamName}
-                  onChange={handleChange}
-                  className="w-full mt-1 bg-nfl-gray bg-opacity-20 text-nfl-white rounded p-2 focus:outline-none focus:ring-2 focus:ring-nfl-red"
-                />
-              </label>
-            </div>
-          ))}
+        
+        <div className="mb-8">
+          <h3 className="text-xl font-semibold mb-4">Team Names</h3>
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+            {settings.teamNames.map((teamName, index) => (
+              <div key={index}>
+                <label className="block mb-2 font-medium">
+                  Team {index + 1}:
+                  <input
+                    type="text"
+                    name={`teamName${index}`}
+                    value={teamName}
+                    onChange={handleChange}
+                    className="w-full mt-1 bg-nfl-blue bg-opacity-50 text-nfl-white rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-nfl-red transition duration-300 ease-in-out"
+                  />
+                </label>
+              </div>
+            ))}
+          </div>
         </div>
-      </div>
-      
-      <div className="mb-8">
-        <h3 className="text-xl font-semibold mb-4">Roster Settings</h3>
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
-          {['QB', 'RB', 'WR', 'TE', 'FLEX', 'K', 'DEF', 'Bench'].map(position => (
-            <div key={position}>
-              <label className="block mb-2 font-semibold">
-                {position} Slots:
+        
+        <div className="mb-8">
+          <h3 className="text-xl font-semibold mb-4">Roster Settings</h3>
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+            {['QB', 'RB', 'WR', 'TE', 'FLEX', 'K', 'DEF', 'Bench'].map(position => (
+              <div key={position}>
+                <label className="block mb-2 font-medium">
+                  {position} Slots:
+                  <input
+                    type="number"
+                    name={`${position.toLowerCase()}Slots`}
+                    value={settings[`${position.toLowerCase()}Slots` as keyof LeagueSettings]}
+                    onChange={handleChange}
+                    min="0"
+                    max="10"
+                    className="w-full mt-1 bg-nfl-blue bg-opacity-50 text-nfl-white rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-nfl-red transition duration-300 ease-in-out"
+                  />
+                </label>
+              </div>
+            ))}
+          </div>
+        </div>
+        
+        <div className="mb-8">
+          <h3 className="text-xl font-semibold mb-4">Scoring Settings</h3>
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+            <div>
+              <label className="block mb-2 font-medium">
+                Passing TD Points:
                 <input
                   type="number"
-                  name={`${position.toLowerCase()}Slots`}
-                  value={settings[`${position.toLowerCase()}Slots` as keyof LeagueSettings]}
+                  name="passingTouchdownPoints"
+                  value={settings.passingTouchdownPoints}
                   onChange={handleChange}
                   min="0"
-                  max="10"
-                  className="w-full mt-1 bg-nfl-gray bg-opacity-20 text-nfl-white rounded p-2 focus:outline-none focus:ring-2 focus:ring-nfl-red"
+                  step="0.5"
+                  className="w-full mt-1 bg-nfl-blue bg-opacity-50 text-nfl-white rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-nfl-red transition duration-300 ease-in-out"
                 />
               </label>
             </div>
-          ))}
+            <div>
+              <label className="block mb-2 font-medium">
+                Rushing TD Points:
+                <input
+                  type="number"
+                  name="rushingTouchdownPoints"
+                  value={settings.rushingTouchdownPoints}
+                  onChange={handleChange}
+                  min="0"
+                  step="0.5"
+                  className="w-full mt-1 bg-nfl-blue bg-opacity-50 text-nfl-white rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-nfl-red transition duration-300 ease-in-out"
+                />
+              </label>
+            </div>
+            <div>
+              <label className="block mb-2 font-medium">
+                Reception Points:
+                <input
+                  type="number"
+                  name="receptionPoints"
+                  value={settings.receptionPoints}
+                  onChange={handleChange}
+                  min="0"
+                  step="0.5"
+                  className="w-full mt-1 bg-nfl-blue bg-opacity-50 text-nfl-white rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-nfl-red transition duration-300 ease-in-out"
+                />
+              </label>
+            </div>
+          </div>
         </div>
-      </div>
-      
-      <button type="submit" className="w-full mt-8 bg-nfl-red hover:bg-red-700 text-nfl-white font-bold py-3 px-4 rounded transition duration-300 ease-in-out transform hover:scale-105">
-        Save Settings
-      </button>
-    </form>
+        
+        <button 
+          type="submit" 
+          className="w-full mt-8 bg-yellow-400 hover:bg-yellow-500 text-black font-bold py-3 px-4 rounded-lg transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-opacity-50 shadow-lg"
+        >
+          Save Settings
+        </button>
+      </form>
+    </div>
   );
 };
 

@@ -64,7 +64,7 @@ const DraftRoom: React.FC = () => {
         }
       } catch (error) {
         console.error('Failed to draft player:', error);
-        alert(`Cannot draft this player: ${(error as Error).message}`);
+        alert("Cannot draft this player, your team has too many of this player type!");
       }
     }
   };
@@ -79,14 +79,14 @@ const DraftRoom: React.FC = () => {
   }, []);
 
   if (isLoading) {
-    return <div className="flex items-center justify-center h-screen bg-nfl-blue">
-      <div className="text-2xl font-bold text-nfl-white">Loading...</div>
+    return <div className="flex items-center justify-center h-screen bg-gradient-to-br from-nfl-blue to-nfl-blue-dark">
+      <div className="text-2xl font-bold text-nfl-white animate-pulse">Loading...</div>
     </div>;
   }
 
   if (error) {
-    return <div className="flex items-center justify-center h-screen bg-nfl-blue">
-      <div className="text-xl font-bold text-nfl-red">Error: {error}</div>
+    return <div className="flex items-center justify-center h-screen bg-gradient-to-br from-nfl-blue to-nfl-blue-dark">
+      <div className="text-xl font-bold text-nfl-red bg-white bg-opacity-10 rounded-lg p-6 backdrop-filter backdrop-blur-sm">Error: {error}</div>
     </div>;
   }
 
@@ -100,23 +100,23 @@ const DraftRoom: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-nfl-blue text-nfl-white">
+    <div className="min-h-screen bg-gradient-to-br from-nfl-blue to-nfl-red text-nfl-white">
       <div className="container mx-auto px-4 py-8">
-        <h1 className="text-5xl font-extrabold mb-8 text-center text-nfl-white shadow-text">
+        <h1 className="text-5xl font-extrabold mb-8 text-center text-nfl-white drop-shadow-lg">
           Fantasy Football Draft Room
         </h1>
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          <div className="bg-nfl-gray bg-opacity-20 rounded-lg shadow-lg p-6 border border-nfl-white border-opacity-20">
+          <div className="bg-white bg-opacity-10 rounded-lg shadow-lg p-6 backdrop-filter backdrop-blur-sm border border-white border-opacity-20">
             <h2 className="text-2xl font-bold mb-4 text-nfl-white">Available Players</h2>
             <PlayerList players={availablePlayers} onDraft={draftPlayer} />
           </div>
           {draftState && (
-            <div className="bg-nfl-gray bg-opacity-20 rounded-lg shadow-lg p-6 border border-nfl-white border-opacity-20">
+            <div className="bg-white bg-opacity-10 rounded-lg shadow-lg p-6 backdrop-filter backdrop-blur-sm border border-white border-opacity-20">
               <h2 className="text-2xl font-bold mb-4 text-nfl-white">Draft Board</h2>
               <DraftBoard draftState={draftState} leagueSettings={leagueSettings} />
             </div>
           )}
-          <div className="bg-nfl-gray bg-opacity-20 rounded-lg shadow-lg p-6 border border-nfl-white border-opacity-20">
+          <div className="bg-white bg-opacity-10 rounded-lg shadow-lg p-6 backdrop-filter backdrop-blur-sm border border-white border-opacity-20">
             <h2 className="text-2xl font-bold mb-4 text-nfl-white">Recommendations</h2>
             <RecommendationDisplay 
               recommendations={recommendations} 

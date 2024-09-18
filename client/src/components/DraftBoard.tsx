@@ -10,7 +10,7 @@ const DraftBoard: React.FC<DraftBoardProps> = ({ draftState, leagueSettings }) =
   type RosterSlotKey = 'QB' | 'RB' | 'WR' | 'TE' | 'FLEX' | 'K' | 'DEF' | 'BN';
 
   const renderRosterSlot = (player: Player | null, position: string) => (
-    <li key={player?.player_id || position} className="text-sm bg-nfl-white bg-opacity-10 rounded p-2 mb-1">
+    <li key={player?.player_id || position} className="text-sm bg-nfl-white bg-opacity-10 rounded p-2 mb-1 transition-all duration-300 ease-in-out hover:bg-opacity-20">
       {player ? (
         <>
           <span className="font-semibold">{player.full_name}</span>
@@ -25,8 +25,6 @@ const DraftBoard: React.FC<DraftBoardProps> = ({ draftState, leagueSettings }) =
   );
 
   const renderTeamRoster = (team: { id: number; players: Player[] }) => {
-    console.log(`Rendering team ${team.id} with ${team.players.length} players`);
-    console.log(team.players);
     const rosterSlots: Record<RosterSlotKey, (Player | null)[]> = {
       QB: Array(leagueSettings.qbSlots).fill(null),
       RB: Array(leagueSettings.rbSlots).fill(null),
@@ -49,7 +47,7 @@ const DraftBoard: React.FC<DraftBoardProps> = ({ draftState, leagueSettings }) =
     });
   
     return (
-      <div key={team.id} className="team-draft bg-nfl-gray bg-opacity-10 rounded-lg p-4 mb-4">
+      <div key={team.id} className="team-draft bg-nfl-gray bg-opacity-10 rounded-lg p-4 mb-4 transition-all duration-300 ease-in-out hover:bg-opacity-20">
         <h3 className="text-xl font-bold mb-2 text-nfl-white">{leagueSettings?.teamNames[team.id - 1]}</h3>
         {(Object.entries(rosterSlots) as [RosterSlotKey, (Player | null)[]][]).map(([position, players]) => (
           <div key={position}>
